@@ -1,20 +1,25 @@
-using UnityEditor.ShaderGraph.Drawing;
 using UnityEngine;
+using System.Collections;
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class HookMovement : MonoBehaviour
 {
     [Header("Values")]
+    [SerializeField][ReadOnly] private Vector2 initialTransform;
     [SerializeField][ReadOnly] private Vector2 moveInput;
     [SerializeField] private float moveSpeed = 1f;
     [SerializeField] private float turnSpeed = 180f;
     [SerializeField][ReadOnly] private bool isMoving;
+
+    [Header("Events")]
+    public GameEvent onControlSwitch;
 
     private Rigidbody2D rb;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        initialTransform = transform.position;
         isMoving = true;
     }
 
@@ -43,10 +48,36 @@ public class HookMovement : MonoBehaviour
         rb.MoveRotation(rb.rotation + turn);
     }
 
-    public void StopHook()
+    public void StopHook(GameObject brushInstance)
     {
-        // TEMP
+        isMoving = false;
+        StartCoroutine(StopHookRoutine(brushInstance));
+    }
+
+    private IEnumerator StopHookRoutine(GameObject brushInstance) {
+        SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
+
+        if (spriteRenderer != null)
+            spriteRenderer.enabled = false;
+
+        Collider2D hookCollider = GetComponent<Collider2D>();
+
+        if (hookCollider != null)
+            hookCollider.enabled = false;
+
+        yield return new WaitForSeconds(3f);
+
+        if (brushInstance != null)
+            Destroy(brushInstance);
+
+        onControlSwitch.Raise(this, "Boat");
+
         Destroy(gameObject);
+    }
+
+    public Vector2 GetInitialTransform()
+    {
+        return initialTransform;
     }
 
     private bool GetIsMoving()

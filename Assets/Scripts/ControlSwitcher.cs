@@ -53,4 +53,18 @@ public class ControlSwitcher : MonoBehaviour
         playerInput.SwitchCurrentActionMap("Hook");
         boatMovement.SetMoveInput(Vector2.zero);
     }
+    public void SwitchToBoatControls()
+    {
+        hookMovement = null;
+        playerInput.SwitchCurrentActionMap("Boat");
+    }
+
+    public void ControlSwitch(Component sender, object data)
+    {
+        if (data is not string type) { return; }
+        if ((string)data == "Boat")
+        {
+            SwitchToBoatControls();
+        }
+    }
 }

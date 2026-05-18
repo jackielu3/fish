@@ -1,89 +1,182 @@
-using NUnit.Framework.Constraints;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(HookMovement))]
 public class HookPathTracker : MonoBehaviour
 {
+    [Header("References")]
     [SerializeField] private HookMovement hookMovement;
 
-    [SerializeField] private GameObject brushPrefab;
-    [SerializeField] private float pointSpacing = 0.1f;
-
-    [SerializeField] private int recentSegmentsToIgnore = 3;
-
+    [Header("Line Renderer")]
     private LineRenderer currentLineRenderer;
-    private Vector3 lastPoint;
+    [SerializeField] private GameObject brushPrefab;
+    private GameObject brushInstance;
+    [SerializeField] private float pointSpacing = 0.1f;
+    [SerializeField] private int recentSegmentsToIgnore = 3;
+    private Vector2 lastPoint;
+
+    [Header("Collision")]
+    private EdgeCollider2D edgeCollider;
+    [SerializeField][ReadOnly] private List<Vector2> cachedPoints = new();
+
+    [Header("Net Area")]
+    [SerializeField] private GameObject netAreaPrefab;
+
+    private bool hasFinished = false;
 
     private void Awake()
     {
         hookMovement = GetComponent<HookMovement>();
-        CreateLineRenderer();
+        CreateBrush();
     }
 
 
     private void Update()
     {
+        if (hasFinished)
+            return;
+
         Draw();
     }
 
-    private void CreateLineRenderer()
+    private void CreateBrush()
     {
-        GameObject brushInstance = Instantiate(brushPrefab);
+        brushInstance = Instantiate(brushPrefab);
+        brushInstance.transform.position = Vector3.zero;
+        brushInstance.transform.rotation = Quaternion.identity;
+
         currentLineRenderer = brushInstance.GetComponent<LineRenderer>();
+        edgeCollider = brushInstance.GetComponent<EdgeCollider2D>();
+
+        if (currentLineRenderer == null)
+        {
+            Debug.LogError("Brush prefab is missing a LineRenderer.", brushPrefab);
+            enabled = false;
+            return;
+        }
+
+        if (edgeCollider == null)
+        {
+            Debug.LogError("Brush prefab is missing an EdgeCollider2D.", brushPrefab);
+            enabled = false;
+            return;
+        }
 
         currentLineRenderer.useWorldSpace = true;
 
-        Vector3 startPos = transform.position;
-        currentLineRenderer.SetPosition(0, startPos);
-        currentLineRenderer.SetPosition(1, startPos);
+        Vector2 startPos = transform.position;
+
+        cachedPoints.Clear();
+        cachedPoints.Add(startPos);
+        cachedPoints.Add(startPos);
+
+        edgeCollider.points = cachedPoints.ToArray();
 
         lastPoint = startPos;
+
+        RefreshLineRenderer();
+        RefreshEdgeCollider();
     }
 
     public void Draw()
     {
-        Vector3 currentPos = transform.position;
+        Vector2 currentPos = transform.position;
 
-        if (Vector3.Distance(lastPoint, currentPos) < pointSpacing)
+        if (Vector2.Distance(lastPoint, currentPos) < pointSpacing)
             return;
 
         AddPoint(currentPos);
-        lastPoint = currentPos;
-
-        CheckForIntersection();
     }
 
-    private void AddPoint(Vector3 pointPos)
+    private void AddPoint(Vector2 pointPos)
     {
-        currentLineRenderer.positionCount++;
-        int positionIndex = currentLineRenderer.positionCount - 1;
-        currentLineRenderer.SetPosition(positionIndex, pointPos);
-    }
+        Vector2 previousPoint = cachedPoints[^1];
 
-    private void CheckForIntersection()
-    {
-        if (currentLineRenderer.positionCount < 5)
+        if (CheckForIntersection(previousPoint, pointPos, out Vector2 intersection, out int intersectedIndex)) // MAYBE ADD A CHECK FOR NUMBER OF NETS
+        {
+            FinishPath(intersection, intersectedIndex);
             return;
+        }
 
-        int newest = currentLineRenderer.positionCount - 1;
+        cachedPoints.Add(pointPos);
+        lastPoint = pointPos;
 
-        Vector2 newA = currentLineRenderer.GetPosition(newest - 1);
-        Vector2 newB = currentLineRenderer.GetPosition(newest);
+        RefreshLineRenderer();
+        RefreshEdgeCollider();
+    }
 
-        int lastIndexToCheck = newest - 1 - recentSegmentsToIgnore;
+    private bool CheckForIntersection(Vector2 newA, Vector2 newB, out Vector2 intersection, out int intersectedIndex)
+    {
+        intersection = Vector2.zero;
+        intersectedIndex = -1;
+
+        if (cachedPoints.Count < 5)
+            return false;
+
+        int newestSegmentIndex = cachedPoints.Count - 1;
+        int lastIndexToCheck = Mathf.Max(0, newestSegmentIndex - recentSegmentsToIgnore);
 
         for (int i = 0; i < lastIndexToCheck; i++)
         {
-            Vector2 oldA = currentLineRenderer.GetPosition(i);
-            Vector2 oldB = currentLineRenderer.GetPosition(i + 1);
+            Vector2 oldA = cachedPoints[i];
+            Vector2 oldB = cachedPoints[i + 1];
 
-            if (LineSegmentsIntersect(newA, newB, oldA, oldB, out Vector2 intersection))
+            if (LineSegmentsIntersect(newA, newB, oldA, oldB, out intersection))
             {
                 Debug.Log("Intersection detected!");
-
-                hookMovement.StopHook();
-                return;
+                intersectedIndex = i;
+                return true;
             }
         }
+        return false;
+    }
+
+    private void FinishPath(Vector2 intersection, int intersectedIndex)
+    {
+        hasFinished = true;
+
+        cachedPoints.Add(intersection);
+        lastPoint = intersection;
+
+        RefreshLineRenderer();
+        RefreshEdgeCollider();
+
+        List<Vector2> loopPoints = BuildLoopPoints(intersection, intersectedIndex);
+        Debug.Log($"Intersection detected. Loop has {loopPoints.Count} points.");
+
+        NetArea netAreaInstance = Instantiate(netAreaPrefab).GetComponent<NetArea>();
+        netAreaInstance.Initialize(loopPoints);
+
+        hookMovement.StopHook(brushInstance);
+    }
+
+    private List<Vector2> BuildLoopPoints(Vector2 intersection, int intersectedIndex)
+    {
+        List<Vector2> loopPoints = new();
+
+        loopPoints.Add(intersection);
+
+        for (int i = intersectedIndex + 1; i < cachedPoints.Count - 1; i++)
+        {
+            loopPoints.Add(cachedPoints[i]);
+        }
+
+        return loopPoints;
+    }
+
+    private void RefreshLineRenderer()
+    {
+        currentLineRenderer.positionCount = cachedPoints.Count;
+        for (int i = 0; i < cachedPoints.Count; i++)
+        {
+            currentLineRenderer.SetPosition(i, cachedPoints[i]);
+        }
+    }
+
+    private void RefreshEdgeCollider()
+    {
+        edgeCollider.SetPoints(cachedPoints);
     }
 
     private bool LineSegmentsIntersect(Vector2 a1, Vector2 a2, Vector2 b1, Vector2 b2, out Vector2 intersection)
@@ -111,6 +204,11 @@ public class HookPathTracker : MonoBehaviour
 
         intersection = new Vector2(x, y);
         return true;
+    }
 
+    public void AddEdgePoint(Vector2 point)
+    {
+        cachedPoints.Add(point);
+        edgeCollider.SetPoints(cachedPoints);
     }
 }

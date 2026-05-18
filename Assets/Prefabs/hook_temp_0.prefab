@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 5701068295418928357}
   m_Layer: 0
   m_Name: hook_temp_0
-  m_TagString: Untagged
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -133,10 +133,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 840491f9101f5d34c86489b906a20539, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FishingLineMovement
+  initialTransform: {x: 0, y: 0}
   moveInput: {x: 0, y: 0}
-  moveSpeed: 2
+  moveSpeed: 4
   turnSpeed: 180
   isMoving: 0
+  onControlSwitch: {fileID: 11400000, guid: 161d77a564ec8d2428701bdf721272ca, type: 2}
 --- !u!114 &5701068295418928357
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -152,3 +154,6 @@ MonoBehaviour:
   hookMovement: {fileID: 0}
   brushPrefab: {fileID: 6495927669853902903, guid: 29913c2d042d6e5488ecdd30620cc18b, type: 3}
   pointSpacing: 0.2
+  recentSegmentsToIgnore: 3
+  cachedPoints: []
+  netAreaPrefab: {fileID: 5843602119597783610, guid: 00a532cbe7a73cb4cb27d82d98b8290f, type: 3}
