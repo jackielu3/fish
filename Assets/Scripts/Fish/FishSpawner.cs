@@ -12,20 +12,19 @@ public class FishSpawner : MonoBehaviour
     [SerializeField] private int maxSpawned;
     [SerializeField][ReadOnly] private int numSpawned;
     [SerializeField] private Tuple<Vector2, Vector2> spawnArea;
+
     private float timer = 0f;
     [SerializeField] private float secsBetweenSpawn = 3f;
 
     private void Update()
     {
+        if (numSpawned >= maxSpawned) return ;
 
-        if (numSpawned > maxSpawned)
+        timer += Time.deltaTime;
+
+        if (timer >= secsBetweenSpawn)
         {
-            timer += Time.deltaTime;
-
-            if (timer >= secsBetweenSpawn)
-            {
-                SpawnFish();
-            }
+            SpawnFish();
         }
     }
 
@@ -33,11 +32,12 @@ public class FishSpawner : MonoBehaviour
     {
         Vector2 spawnPos = new(
             UnityEngine.Random.Range(Mathf.Min(spawnArea.Item1.x, spawnArea.Item2.x), Mathf.Max(spawnArea.Item1.x, spawnArea.Item2.x)),
-            UnityEngine.Random.Range(Mathf.Min(spawnArea.Item1.y, spawnArea.Item2.y), Mathf.Max(spawnArea.Item1.y, spawnArea.Item2.y))
+            UnityEngine.Random.Rang e(Mathf.Min(spawnArea.Item1.y, spawnArea.Item2.y), Mathf.Max(spawnArea.Item1.y, spawnArea.Item2.y))
         );
 
         Fish fish = Instantiate(fishType, spawnPos, Quaternion.identity).GetComponent<Fish>(); ;
 
         fish.transform.position = spawnPos;
+        fish.Initialize(fishType);
     }
 }
