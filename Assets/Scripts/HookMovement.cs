@@ -55,6 +55,8 @@ public class HookMovement : MonoBehaviour
     }
 
     private IEnumerator StopHookRoutine(GameObject brushInstance) {
+        moveSpeed = 0;
+
         SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
 
         if (spriteRenderer != null)

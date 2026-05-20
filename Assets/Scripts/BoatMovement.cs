@@ -8,6 +8,8 @@ public class BoatMovement : MonoBehaviour
     [Header("References")]
     [SerializeField] private GameObject hookPrefab;
     [SerializeField] private Transform hookSpawn;
+    
+
     private Rigidbody2D rb;
 
     [Header("Values")]

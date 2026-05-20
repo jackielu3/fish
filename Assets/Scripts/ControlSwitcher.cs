@@ -1,3 +1,4 @@
+using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -5,6 +6,7 @@ using UnityEngine.InputSystem;
 public class ControlSwitcher : MonoBehaviour
 {
     [Header("References")]
+    [SerializeField] private CinemachineCamera vcam;
     [SerializeField] private BoatMovement boatMovement;
     [ReadOnly] private HookMovement hookMovement;
     private PlayerInput playerInput;
@@ -50,12 +52,14 @@ public class ControlSwitcher : MonoBehaviour
     private void LaunchHook()
     {
         hookMovement = boatMovement.LaunchHook().GetComponent<HookMovement>();
+        vcam.Follow = hookMovement.transform;
         playerInput.SwitchCurrentActionMap("Hook");
         boatMovement.SetMoveInput(Vector2.zero);
     }
     public void SwitchToBoatControls()
     {
         hookMovement = null;
+        vcam.Follow = boatMovement.transform;
         playerInput.SwitchCurrentActionMap("Boat");
     }
 

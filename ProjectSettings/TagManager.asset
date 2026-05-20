@@ -40,8 +40,32 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: Background
+    uniqueID: 179154011
+    locked: 0
+  - name: Distant Islands
+    uniqueID: 1032876063
+    locked: 0
+  - name: Islands
+    uniqueID: 2396620345
+    locked: 0
+  - name: Back Water
+    uniqueID: 2246979745
+    locked: 0
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Player Boat
+    uniqueID: 1902157697
+    locked: 0
+  - name: FrontWater
+    uniqueID: 497360421
+    locked: 0
+  - name: Fish
+    uniqueID: 2659539187
+    locked: 0
+  - name: Player Hook
+    uniqueID: 3313737009
     locked: 0
   m_RenderingLayers:
   - Default
