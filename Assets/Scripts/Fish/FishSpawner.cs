@@ -32,7 +32,7 @@ public class FishSpawner : MonoBehaviour
     {
         Vector2 spawnPos = new(
             UnityEngine.Random.Range(Mathf.Min(spawnArea.Item1.x, spawnArea.Item2.x), Mathf.Max(spawnArea.Item1.x, spawnArea.Item2.x)),
-            UnityEngine.Random.Rang e(Mathf.Min(spawnArea.Item1.y, spawnArea.Item2.y), Mathf.Max(spawnArea.Item1.y, spawnArea.Item2.y))
+            UnityEngine.Random.Range(Mathf.Min(spawnArea.Item1.y, spawnArea.Item2.y), Mathf.Max(spawnArea.Item1.y, spawnArea.Item2.y))
         );
 
         Fish fish = Instantiate(fishType, spawnPos, Quaternion.identity).GetComponent<Fish>(); ;
