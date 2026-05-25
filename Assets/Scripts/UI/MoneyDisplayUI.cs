@@ -4,7 +4,7 @@ using UnityEngine;
 public class MoneyDisplayUI : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI moneyText;
-    [SerializeField] private int totalMoney;
+    public float totalMoney;
 
     private void Awake()
     {
@@ -13,10 +13,10 @@ public class MoneyDisplayUI : MonoBehaviour
 
     public void UpdateMoneyUI(Component sender, object data)
     {
-        if (data is int valueInt)
+        if (data is float valueInt)
         {
             totalMoney += valueInt;
-            moneyText.text = "$" + totalMoney;
+            moneyText.text = "$" + totalMoney.ToString("F2");
         }
     }
 }

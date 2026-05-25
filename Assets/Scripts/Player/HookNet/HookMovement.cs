@@ -4,6 +4,8 @@ using System.Collections;
 [RequireComponent(typeof(Rigidbody2D))]
 public class HookMovement : MonoBehaviour
 {
+    private static WaitForSeconds _waitForSeconds3 = new(3f);
+
     [Header("Values")]
     [SerializeField][ReadOnly] private Vector2 initialTransform;
     [SerializeField][ReadOnly] private Vector2 moveInput;
@@ -43,7 +45,6 @@ public class HookMovement : MonoBehaviour
     private void Turn()
     {
         float turn = moveInput.x * turnSpeed * Time.fixedDeltaTime;
-        Debug.Log($"moveInput.x: {moveInput.x}, turn: {turn}, rb rotation: {rb.rotation}");
 
         rb.MoveRotation(rb.rotation + turn);
     }
@@ -67,7 +68,7 @@ public class HookMovement : MonoBehaviour
         if (hookCollider != null)
             hookCollider.enabled = false;
 
-        yield return new WaitForSeconds(3f);
+        yield return _waitForSeconds3;
 
         if (brushInstance != null)
             Destroy(brushInstance);
@@ -87,4 +88,3 @@ public class HookMovement : MonoBehaviour
         return isMoving;
     }
 }
-   

@@ -142,10 +142,10 @@ TextureImporter:
       name: Smallfish2_0
       rect:
         serializedVersion: 2
-        x: 360
-        y: 310
-        width: 44
-        height: 19
+        x: 370
+        y: 309
+        width: 46
+        height: 21
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}

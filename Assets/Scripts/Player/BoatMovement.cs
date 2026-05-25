@@ -40,6 +40,8 @@ public class BoatMovement : MonoBehaviour
     public GameObject LaunchHook()
     {
         Quaternion spawnRotation = Quaternion.Euler(0f, 0f, 0f);
-        return Instantiate(hookPrefab, hookSpawn.position, spawnRotation);
+        GameObject hook = Instantiate(hookPrefab, hookSpawn.position, spawnRotation);
+        hook.GetComponent<HookPathTracker>().Initialize(hookSpawn);
+        return hook;
     }
 }

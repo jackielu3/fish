@@ -5,6 +5,8 @@ public class FishData : ScriptableObject
 {
     public string fishName;
 
+    public Fish prefab;
+
     public Sprite sprite;
     public Sprite closeup;
     

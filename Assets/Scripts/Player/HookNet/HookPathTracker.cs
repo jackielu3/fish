@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,6 +6,8 @@ public class HookPathTracker : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private HookMovement hookMovement;
+    private NetVisualAnimator netVisualAnimator;
+    private Transform boatRopePoint;
 
     [Header("Line Renderer")]
     private LineRenderer currentLineRenderer;
@@ -22,6 +23,9 @@ public class HookPathTracker : MonoBehaviour
 
     [Header("Net Area")]
     [SerializeField] private GameObject netAreaPrefab;
+
+    [Header("Events")]
+    [SerializeField] private GameEvent onNetCreated;
 
     private bool hasFinished = false;
 
@@ -40,11 +44,26 @@ public class HookPathTracker : MonoBehaviour
         Draw();
     }
 
+    public void Initialize(Transform boatPoint)
+    {
+        boatRopePoint = boatPoint;
+    }
+
     private void CreateBrush()
     {
         brushInstance = Instantiate(brushPrefab);
         brushInstance.transform.position = Vector3.zero;
         brushInstance.transform.rotation = Quaternion.identity;
+
+        brushInstance.SetActive(true);
+        netVisualAnimator = brushInstance.GetComponent<NetVisualAnimator>();
+
+        if (netVisualAnimator == null)
+        {
+            Debug.LogError("Brush prefab is missing a NetVisualAnimator.", brushPrefab);
+            enabled = false;
+            return;
+        }
 
         currentLineRenderer = brushInstance.GetComponent<LineRenderer>();
         edgeCollider = brushInstance.GetComponent<EdgeCollider2D>();
@@ -143,10 +162,15 @@ public class HookPathTracker : MonoBehaviour
         RefreshEdgeCollider();
 
         List<Vector2> loopPoints = BuildLoopPoints(intersection, intersectedIndex);
-        Debug.Log($"Intersection detected. Loop has {loopPoints.Count} points.");
 
         NetArea netAreaInstance = Instantiate(netAreaPrefab).GetComponent<NetArea>();
         netAreaInstance.Initialize(loopPoints);
+
+        List<Vector2> ropePoints = BuildRopePoints(intersection, intersectedIndex);
+
+        netVisualAnimator.PlayNetMorph(loopPoints, ropePoints, boatRopePoint);
+
+        onNetCreated.Raise(this, new List<Vector2>(loopPoints));
 
         hookMovement.StopHook(brushInstance);
     }
@@ -204,6 +228,20 @@ public class HookPathTracker : MonoBehaviour
 
         intersection = new Vector2(x, y);
         return true;
+    }
+
+    private List<Vector2> BuildRopePoints(Vector2 intersection, int intersectedIndex)
+    {
+        List<Vector2> ropePoints = new();
+
+        for (int i = 0; i <= intersectedIndex; i++)
+        {
+            ropePoints.Add(cachedPoints[i]);
+        }
+
+        ropePoints.Add(intersection);
+
+        return ropePoints;
     }
 
     public void AddEdgePoint(Vector2 point)

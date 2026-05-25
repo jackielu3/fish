@@ -67,6 +67,6 @@
         "*.sln": "*.csproj",
         "*.slnx": "*.csproj"
     },
-    "dotnet.defaultSolution": "fish.slnx",
+    "dotnet.defaultSolution": "net-profits.slnx",
     "dotnet.enableWorkspaceBasedDevelopment": false
 }

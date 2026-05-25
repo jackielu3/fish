@@ -95,3 +95,4 @@ MonoBehaviour:
   fishLayer:
     serializedVersion: 2
     m_Bits: 2048
+  onNetCreated: {fileID: 11400000, guid: bbb7baab015803e4ebef3427891238d4, type: 2}

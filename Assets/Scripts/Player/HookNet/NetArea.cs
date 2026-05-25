@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -55,12 +56,8 @@ public class NetArea : MonoBehaviour
 
         foreach (Collider2D result in results)
         {
-            Fish fish = result.GetComponent<Fish>();
-
-            if (fish != null)
-            {
-                fish.Catch();
-            }
+            if (!result.TryGetComponent<Fish>(out var fish)) continue;
+            fish.Catch();
         }
     }
 

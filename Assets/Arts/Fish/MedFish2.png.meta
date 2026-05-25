@@ -3,8 +3,8 @@ guid: 2ed56d1f0afa37845acfefb3ca0ce2bc
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -4995657380431622729
-    second: MedFish2_0
+      213: -4804891078460176532
+    second: Medfish2_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -139,13 +139,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: MedFish2_0
+      name: Medfish2_0
       rect:
         serializedVersion: 2
-        x: 360
-        y: 303
-        width: 64
-        height: 37
+        x: 367
+        y: 294
+        width: 66
+        height: 39
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -154,8 +154,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 7bd80d3a41cdbaab0800000000000000
-      internalID: -4995657380431622729
+      spriteID: c6700f38509915db0800000000000000
+      internalID: -4804891078460176532
       vertices: []
       indices: 
       edges: []
@@ -174,7 +174,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      MedFish2_0: -4995657380431622729
+      Medfish2_0: -4804891078460176532
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

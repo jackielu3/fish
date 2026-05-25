@@ -1,17 +1,8 @@
+using System;
 using UnityEngine;
 
-[RequireComponent(typeof(Fish))]
+[RequireComponent(typeof(Fish), typeof(Rigidbody2D))]
 public class SmallFish : MonoBehaviour
 {
-    private Fish fish;
-
-    private void Awake()
-    {
-        fish = GetComponent<Fish>();
-    }
-
-    private void Update()
-    {
-        
-    }
+    
 }
