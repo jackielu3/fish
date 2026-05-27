@@ -11,26 +11,22 @@ public class NetArea : MonoBehaviour
     public void Awake()
     {
         polygonCollider = GetComponent<PolygonCollider2D>();
-        polygonCollider.isTrigger = true;
+        polygonCollider.isTrigger = false;
     }
 
     public void Initialize(List<Vector2> points)
     {
-        Vector2 center = GetCenter(points);
-        transform.position = center;
+        if (points == null || points.Count < 3) return;
 
-        Vector2[] localPoints = new Vector2[points.Count];
+        List<Vector3> worldPoints = new();
 
         for (int i = 0; i < points.Count; i++)
         {
-            localPoints[i] = transform.InverseTransformPoint(points[i]);
+            worldPoints.Add(points[i]);
         }
 
-        polygonCollider.pathCount = 1;
-        polygonCollider.SetPath(0, localPoints);
-
+        UpdateShape(worldPoints);
         CatchFish();
-        polygonCollider.enabled = false;
     }
 
     private Vector2 GetCenter(List<Vector2> points)
@@ -40,6 +36,18 @@ public class NetArea : MonoBehaviour
         for (int i = 0; i < points.Count; i++)
         {
             total += points[i];
+        }
+
+        return total / points.Count;
+    }
+
+    private Vector2 GetCenter(List<Vector3> points)
+    {
+        Vector2 total = Vector2.zero;
+
+        for (int i = 0; i < points.Count; i++)
+        {
+            total += (Vector2)points[i];
         }
 
         return total / points.Count;
@@ -64,5 +72,24 @@ public class NetArea : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision)
     {
         Debug.Log("Net area triggered with: " + collision.gameObject.name);
+    }
+
+    public void UpdateShape(List<Vector3> worldPoints)
+    {
+        if (worldPoints == null || worldPoints.Count < 3) return;
+
+        Vector2 center = GetCenter(worldPoints);
+        transform.position = center;
+
+        Vector2[] localPoints = new Vector2[worldPoints.Count];
+
+        for (int i = 0; i < worldPoints.Count; i++)
+        {
+            localPoints[i] = transform.InverseTransformPoint(worldPoints[i]);
+        }
+
+        polygonCollider.enabled = true;
+        polygonCollider.pathCount = 1;
+        polygonCollider.SetPath(0, localPoints);
     }
 }

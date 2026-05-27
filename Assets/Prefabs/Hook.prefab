@@ -138,6 +138,9 @@ MonoBehaviour:
   moveSpeed: 4
   turnSpeed: 180
   isMoving: 0
+  useBounds: 1
+  minBounds: {x: -50, y: -42.73}
+  maxBounds: {x: 50, y: -1.5}
   onControlSwitch: {fileID: 11400000, guid: 161d77a564ec8d2428701bdf721272ca, type: 2}
 --- !u!114 &5701068295418928357
 MonoBehaviour:
@@ -151,11 +154,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 587fd646bf754ee47907be4187459598, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HookPathTracker
-  hookMovement: {fileID: 0}
-  netVisualAnimator: {fileID: 4998623035157493522, guid: 29913c2d042d6e5488ecdd30620cc18b, type: 3}
+  hookMovement: {fileID: 1240099300947964414}
   brushPrefab: {fileID: 6495927669853902903, guid: 29913c2d042d6e5488ecdd30620cc18b, type: 3}
   pointSpacing: 0.2
   recentSegmentsToIgnore: 3
+  intersectionEpsilon: 0.03
   cachedPoints: []
   netAreaPrefab: {fileID: 5843602119597783610, guid: 00a532cbe7a73cb4cb27d82d98b8290f, type: 3}
   onNetCreated: {fileID: 11400000, guid: bbb7baab015803e4ebef3427891238d4, type: 2}

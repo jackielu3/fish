@@ -58,11 +58,6 @@ Shader "Custom/NetHatch"
                 float topToBottom = saturate(0.5 - y);
                 float allowedHalfWidth = lerp(0.08, 0.5, topToBottom);
 
-                float sideMask = abs(x) <= allowedHalfWidth;
-                float bottomRound = (x * x * 2.5) + ((y + 0.18) * (y + 0.18) * 1.4) <= 0.55;
-
-                float insideNet = sideMask * bottomRound;
-
                 float distFromCenter = length(float2(x * 2.0, y * 2.0));
                 float revealed = distFromCenter >= _HoleRadius;
 
@@ -71,7 +66,7 @@ Shader "Custom/NetHatch"
                 worldLikeUv.y = (y * _Length) / _TileWorldSize;
 
                 fixed4 col = tex2D(_MainTex, worldLikeUv) * _Color;
-                col.a *= insideNet * revealed;
+                col.a *= revealed;
 
                 return col;
             }

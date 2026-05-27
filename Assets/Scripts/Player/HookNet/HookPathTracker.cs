@@ -17,6 +17,9 @@ public class HookPathTracker : MonoBehaviour
     [SerializeField] private int recentSegmentsToIgnore = 3;
     private Vector2 lastPoint;
 
+    [SerializeField] private float intersectionEpsilon = 0.03f;
+
+
     [Header("Collision")]
     private EdgeCollider2D edgeCollider;
     [SerializeField][ReadOnly] private List<Vector2> cachedPoints = new();
@@ -35,11 +38,10 @@ public class HookPathTracker : MonoBehaviour
         CreateBrush();
     }
 
-
-    private void Update()
+    private void LateUpdate()
     {
         if (hasFinished)
-            return;
+            return; 
 
         Draw();
     }
@@ -130,25 +132,33 @@ public class HookPathTracker : MonoBehaviour
         intersection = Vector2.zero;
         intersectedIndex = -1;
 
-        if (cachedPoints.Count < 5)
-            return false;
-
         int newestSegmentIndex = cachedPoints.Count - 1;
         int lastIndexToCheck = Mathf.Max(0, newestSegmentIndex - recentSegmentsToIgnore);
+
+        float closestT = float.MaxValue;
 
         for (int i = 0; i < lastIndexToCheck; i++)
         {
             Vector2 oldA = cachedPoints[i];
             Vector2 oldB = cachedPoints[i + 1];
 
-            if (LineSegmentsIntersect(newA, newB, oldA, oldB, out intersection))
+            if (Vector2.Distance(oldA, oldB) <= 0.0001f)
+                continue;
+
+            if (LineSegmentsIntersect(newA, newB, oldA, oldB, out Vector2 hit, out float tOnNewSegment))
             {
-                Debug.Log("Intersection detected!");
-                intersectedIndex = i;
-                return true;
+                if (tOnNewSegment < closestT)
+                {
+                    if (tOnNewSegment < closestT)
+                    {
+                        closestT = tOnNewSegment;
+                        intersection = hit;
+                        intersectedIndex = i;
+                    }
+                }
             }
         }
-        return false;
+        return intersectedIndex != -1;
     }
 
     private void FinishPath(Vector2 intersection, int intersectedIndex)
@@ -164,11 +174,12 @@ public class HookPathTracker : MonoBehaviour
         List<Vector2> loopPoints = BuildLoopPoints(intersection, intersectedIndex);
 
         NetArea netAreaInstance = Instantiate(netAreaPrefab).GetComponent<NetArea>();
+        netAreaInstance.transform.SetParent(this.transform);
         netAreaInstance.Initialize(loopPoints);
 
         List<Vector2> ropePoints = BuildRopePoints(intersection, intersectedIndex);
 
-        netVisualAnimator.PlayNetMorph(loopPoints, ropePoints, boatRopePoint);
+        netVisualAnimator.PlayNetMorph(loopPoints, ropePoints, boatRopePoint, netAreaInstance);
 
         onNetCreated.Raise(this, new List<Vector2>(loopPoints));
 
@@ -203,31 +214,65 @@ public class HookPathTracker : MonoBehaviour
         edgeCollider.SetPoints(cachedPoints);
     }
 
-    private bool LineSegmentsIntersect(Vector2 a1, Vector2 a2, Vector2 b1, Vector2 b2, out Vector2 intersection)
+    private bool LineSegmentsIntersect(
+        Vector2 a1,
+        Vector2 a2,
+        Vector2 b1,
+        Vector2 b2,
+        out Vector2 intersection,
+        out float tOnA
+        )
     {
         intersection = Vector2.zero;
+        tOnA = 0f;
 
-        float d = (a1.x - a2.x) * (b1.y - b2.y) - (a1.y - a2.y) * (b1.x - b2.x);
+        Vector2 r = a2 - a1;
+        Vector2 s = b2 - b1;
 
-        if (Mathf.Abs(d) < 0.0001f)
+        float rxs = Cross(r, s);
+        float qpxr = Cross(b1 - a1, r);
+
+        if (r.sqrMagnitude <= 0.000001f || s.sqrMagnitude <= 0.000001f)
             return false;
 
-        float pre = (a1.x * a2.y - a1.y * a2.x);
-        float post = (b1.x * b2.y - b1.y * b2.x);
+        if (Mathf.Abs(rxs) <= 0.000001f)
+        {
+            if (Mathf.Abs(qpxr) > intersectionEpsilon)
+                return false;
 
-        float x = (pre * (b1.x - b2.x) - (a1.x - a2.x) * post) / d;
-        float y = (pre * (b1.y - b2.y) - (a1.y - a2.y) * post) / d;
+            float t0 = Vector2.Dot(b1 - a1, r) / Vector2.Dot(r, r);
+            float t1 = Vector2.Dot(b2 - a1, r) / Vector2.Dot(r, r);
+
+            float minT = Mathf.Min(t0, t1);
+            float maxT = Mathf.Max(t0, t1);
+
+            if (maxT < -intersectionEpsilon || minT > 1f + intersectionEpsilon)
+                return false;
+
+            tOnA = Mathf.Clamp01(minT);
+            intersection = a1 + r * tOnA;
+            return true;
+        }
+
+        float t = Cross(b1 - a1, s) / rxs;
+        float u = Cross(b1 - a1, r) / rxs;
 
         if (
-            x < Mathf.Min(a1.x, a2.x) || x > Mathf.Max(a1.x, a2.x) ||
-            x < Mathf.Min(b1.x, b2.x) || x > Mathf.Max(b1.x, b2.x) ||
-            y < Mathf.Min(a1.y, a2.y) || y > Mathf.Max(a1.y, a2.y) ||
-            y < Mathf.Min(b1.y, b2.y) || y > Mathf.Max(b1.y, b2.y)
-            )
+            t < -intersectionEpsilon || t > 1f + intersectionEpsilon ||
+            u < -intersectionEpsilon || u > 1f + intersectionEpsilon
+        )
+        {
             return false;
+        }
 
-        intersection = new Vector2(x, y);
+        tOnA = Mathf.Clamp01(t);
+        intersection = a1 + r * tOnA;
         return true;
+    }
+
+    private float Cross(Vector2 a, Vector2 b)
+    {
+        return a.x * b.y - a.y * b.x;
     }
 
     private List<Vector2> BuildRopePoints(Vector2 intersection, int intersectedIndex)

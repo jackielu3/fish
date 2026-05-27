@@ -58,6 +58,9 @@ TagManager:
   - name: Player Boat
     uniqueID: 1902157697
     locked: 0
+  - name: 'Underwater Background '
+    uniqueID: 565826871
+    locked: 0
   - name: FrontWater
     uniqueID: 497360421
     locked: 0
@@ -66,6 +69,9 @@ TagManager:
     locked: 0
   - name: Player Hook
     uniqueID: 3313737009
+    locked: 0
+  - name: Bottom
+    uniqueID: 129736457
     locked: 0
   m_RenderingLayers:
   - Default

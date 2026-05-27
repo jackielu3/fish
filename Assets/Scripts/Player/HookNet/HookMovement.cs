@@ -13,6 +13,11 @@ public class HookMovement : MonoBehaviour
     [SerializeField] private float turnSpeed = 180f;
     [SerializeField][ReadOnly] private bool isMoving;
 
+    [Header("Bounds")]
+    [SerializeField] private bool useBounds = true;
+    [SerializeField] private Vector2 minBounds;
+    [SerializeField] private Vector2 maxBounds;
+
     [Header("Events")]
     public GameEvent onControlSwitch;
 
@@ -39,7 +44,15 @@ public class HookMovement : MonoBehaviour
     private void Move()
     {
         Vector2 movement = moveSpeed * Time.fixedDeltaTime * -transform.up;
-        rb.MovePosition(rb.position + movement);
+        Vector2 targetPosition = rb.position + movement;
+
+        if (useBounds)
+        {
+            targetPosition.x = Mathf.Clamp(targetPosition.x, minBounds.x, maxBounds.x);
+            targetPosition.y = Mathf.Clamp(targetPosition.y, minBounds.y, maxBounds.y);
+        }
+
+        rb.MovePosition(targetPosition);
     }
 
     private void Turn()

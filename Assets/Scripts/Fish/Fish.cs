@@ -131,7 +131,6 @@ public class Fish : MonoBehaviour
     public void Catch()
     {
         onMoneyEarned.Raise(this, Data.value);
-        Destroy(gameObject);
     }
 
     public bool IsMoving() => isMoving;

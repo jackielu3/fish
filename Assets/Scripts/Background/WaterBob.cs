@@ -13,7 +13,6 @@ public class WaterBob : MonoBehaviour
         startPosition = transform.localPosition;        
     }
 
-    // Update is called once per frame
     void Update()
     {
         float yOffset = Mathf.Sin(Time.time * bobSpeed) * bobAmount;

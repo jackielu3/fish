@@ -11,18 +11,20 @@ public class NetHatchVisual : MonoBehaviour
     [SerializeField] private float tileWorldSize = 1f;
 
     private MeshRenderer meshRenderer;
+    private MeshFilter meshFilter;
+    private Mesh mesh;
     private Material hatchMaterial;
 
-    private static readonly int WidthId = Shader.PropertyToID("_Width");
-    private static readonly int LengthId = Shader.PropertyToID("_Length");
-    private static readonly int TileWorldSizeId = Shader.PropertyToID("_TileWorldSize");
     private static readonly int HoleRadiusId = Shader.PropertyToID("_HoleRadius");
 
     private void Awake()
     {
         meshRenderer = GetComponent<MeshRenderer>();
+        meshFilter = GetComponent<MeshFilter>();
 
-        GetComponent<MeshFilter>().mesh = BuildQuadMesh();
+        mesh = new Mesh();
+        mesh.name = "Net Hatch Mesh";
+        meshFilter.mesh = mesh;
 
         hatchMaterial = new Material(hatchMaterialTemplate);
         meshRenderer.material = hatchMaterial;
@@ -32,35 +34,9 @@ public class NetHatchVisual : MonoBehaviour
 
     public void UpdateHatch(List<Vector3> netPoints, Vector3 directionToBoat, float revealAmount)
     {
-        if (netPoints == null || netPoints.Count == 0) return;
+        if (netPoints == null || netPoints.Count < 3) return;
 
-        Bounds bounds = new(netPoints[0], Vector3.zero);
-
-        foreach (Vector3 point in netPoints)
-        {
-            bounds.Encapsulate(point);
-        }
-
-        Vector3 center = bounds.center;
-
-        if (directionToBoat == Vector3.zero)
-            directionToBoat = Vector3.up;
-
-        Vector3 sideDirection = new(-directionToBoat.y, directionToBoat.x, 0f);
-
-        float width = GetSizeAlongAxis(netPoints, sideDirection);
-        float length = GetSizeAlongAxis(netPoints, directionToBoat);
-
-        transform.position = center;
-
-        float angle = Mathf.Atan2(directionToBoat.y, directionToBoat.x) * Mathf.Rad2Deg - 90f;
-        transform.rotation = Quaternion.Euler(0f, 0f, angle);
-
-        transform.localScale = new Vector3(width, length, 1f);
-
-        hatchMaterial.SetFloat(WidthId, width);
-        hatchMaterial.SetFloat(LengthId, length);
-        hatchMaterial.SetFloat(TileWorldSizeId, tileWorldSize);
+        BuildMesh(netPoints);
 
         float holeRadius = Mathf.Lerp(1.25f, 0f, revealAmount);
         hatchMaterial.SetFloat(HoleRadiusId, holeRadius);
@@ -74,51 +50,57 @@ public class NetHatchVisual : MonoBehaviour
             meshRenderer.enabled = false;
     }
 
-    private Mesh BuildQuadMesh()
+    private void BuildMesh(List<Vector3> points)
     {
-        Mesh mesh = new();
+        mesh.Clear();
 
-        mesh.vertices = new[]
+        Vector3 center = GetCenter(points);
+
+        Vector3[] vertices = new Vector3[points.Count + 1];
+        Vector2[] uvs = new Vector2[vertices.Length];
+        int[] triangles = new int[points.Count * 3];
+
+        vertices[0] = transform.InverseTransformPoint(center);
+        uvs[0] = WorldToTileUv(center);
+
+        for (int i = 0; i < points.Count; i++)
         {
-            new Vector3(-0.5f, -0.5f, 0f),
-            new Vector3(-0.5f,  0.5f, 0f),
-            new Vector3( 0.5f,  0.5f, 0f),
-            new Vector3( 0.5f, -0.5f, 0f)
-        };
-
-        mesh.uv = new[]
-        {
-            new Vector2(0f, 0f),
-            new Vector2(0f, 1f),
-            new Vector2(1f, 1f),
-            new Vector2(1f, 0f)
-        };
-
-        mesh.triangles = new[]
-        {
-            0, 1, 2,
-            0, 2, 3
-        };
-
-        mesh.RecalculateBounds();
-        return mesh;
-    }
-
-    private float GetSizeAlongAxis(List<Vector3> points, Vector3 axis)
-    {
-        axis.Normalize();
-
-        float min = Vector3.Dot(points[0], axis);
-        float max = min;
-
-        for (int i = 1; i < points.Count; i++)
-        {
-            float value = Vector3.Dot(points[i], axis);
-
-            if (value < min) min = value;
-            if (value > max) max = value;
+            vertices[i + 1] = transform.InverseTransformPoint(points[i]);
+            uvs[i + 1] = WorldToTileUv(points[i]);
         }
 
-        return max - min;
+        for (int i = 0; i < points.Count; i++)
+        {
+            int triIndex = i * 3;
+
+            triangles[triIndex] = 0;
+            triangles[triIndex + 1] = i + 1;
+            triangles[triIndex + 2] = i == points.Count - 1 ? 1 : i + 2;
+        }
+
+        mesh.vertices = vertices;
+        mesh.uv = uvs;
+        mesh.triangles = triangles;
+        mesh.RecalculateBounds();
+    }
+
+    private Vector2 WorldToTileUv(Vector3 worldPoint)
+    {
+        return new Vector2(
+            worldPoint.x / tileWorldSize,
+            worldPoint.y / tileWorldSize
+        );
+    }
+
+    private Vector3 GetCenter(List<Vector3> points)
+    {
+        Vector3 total = Vector3.zero;
+
+        foreach (Vector3 point in points)
+        {
+            total += point;
+        }
+
+        return total / points.Count;
     }
 }

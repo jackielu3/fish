@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class PassiveIncome : MonoBehaviour
 {
+    private float totalMoney = 0;
     public int boatsOwned { get; private set; }
 
     [Header("Events")]
@@ -34,4 +35,6 @@ public class PassiveIncome : MonoBehaviour
 
         boatsOwned += 1;
     }
+
+    public float TotalMoney() => totalMoney;
 }

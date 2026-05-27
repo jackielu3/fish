@@ -8,6 +8,9 @@ public class ShopUI : MonoBehaviour
     [SerializeField] private MoneyDisplayUI TEMP;
     [SerializeField] private PassiveIncome TEMPBOAT;
 
+    [SerializeField] private IdleBoat[] idleBoats;
+    private int boatIndex = 0;
+
     [SerializeField] private TextMeshProUGUI notEnoughMoneyText;
     [SerializeField] private TextMeshProUGUI boatsOwnedText;
     [SerializeField] private TextMeshProUGUI boatCostText;
@@ -35,6 +38,12 @@ public class ShopUI : MonoBehaviour
 
             boatPrice += priceIncreasePerBoat;
             boatCostText.text = $"${ boatPrice }";
+
+            if (boatIndex < idleBoats.Length)
+            {
+                idleBoats[boatIndex].gameObject.SetActive(true);
+                boatIndex++;
+            }
         }
     }
 

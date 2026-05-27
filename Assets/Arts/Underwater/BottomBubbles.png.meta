@@ -1,28 +1,25 @@
 fileFormatVersion: 2
-guid: 810a12d15cc054a4d914b6d88739fd62
+guid: af60410090205834f894e21ef7beda7a
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -1874924324265222933
-    second: Light_Beams_0
+      213: -5901777275481452796
+    second: BottomBubbles_0
   - first:
-      213: 572338512685867281
-    second: Light_Beams_1
+      213: -2401313891449923477
+    second: BottomBubbles_1
   - first:
-      213: 4290362777379371546
-    second: Light_Beams_2
+      213: 6213857179909281321
+    second: BottomBubbles_2
   - first:
-      213: 6447559560900605480
-    second: Light_Beams_3
+      213: -4192189416123351352
+    second: BottomBubbles_3
   - first:
-      213: -2754184903755742053
-    second: Light_Beams_4
+      213: -6631300494331267111
+    second: BottomBubbles_4
   - first:
-      213: 1836673075307339909
-    second: Light_Beams_5
-  - first:
-      213: 8642429533032703441
-    second: Light_Beams_6
+      213: -7875689688661275683
+    second: BottomBubbles_5
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -157,13 +154,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Light_Beams_0
+      name: BottomBubbles_0
       rect:
         serializedVersion: 2
-        x: 12
-        y: 5
-        width: 52
-        height: 195
+        x: 380
+        y: 605
+        width: 37
+        height: 58
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -172,20 +169,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: bec9e67c24eeaf5e0800000000000000
-      internalID: -1874924324265222933
+      spriteID: 40f847f36dca81ea0800000000000000
+      internalID: -5901777275481452796
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Light_Beams_1
+      name: BottomBubbles_1
       rect:
         serializedVersion: 2
-        x: 64
-        y: 52
-        width: 28
-        height: 148
+        x: 702
+        y: 629
+        width: 6
+        height: 6
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -194,42 +191,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 111aaeb48da51f700800000000000000
-      internalID: 572338512685867281
+      spriteID: b689ae90db1dcaed0800000000000000
+      internalID: -2401313891449923477
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Light_Beams_2
+      name: BottomBubbles_2
       rect:
         serializedVersion: 2
-        x: 84
-        y: 4
-        width: 77
-        height: 196
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: a1a7147f63e6a8b30800000000000000
-      internalID: 4290362777379371546
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Light_Beams_3
-      rect:
-        serializedVersion: 2
-        x: 152
-        y: 6
+        x: 986
+        y: 531
         width: 23
-        height: 194
+        height: 125
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -238,20 +213,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 82677af82455a7950800000000000000
-      internalID: 6447559560900605480
+      spriteID: 926d085ce2e0c3650800000000000000
+      internalID: 6213857179909281321
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Light_Beams_4
+      name: BottomBubbles_3
       rect:
         serializedVersion: 2
-        x: 176
-        y: 7
-        width: 65
-        height: 193
+        x: 405
+        y: 580
+        width: 9
+        height: 20
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -260,20 +235,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: b9445ed1c6b27c9d0800000000000000
-      internalID: -2754184903755742053
+      spriteID: 8ceb0dcefe952d5c0800000000000000
+      internalID: -4192189416123351352
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Light_Beams_5
+      name: BottomBubbles_4
       rect:
         serializedVersion: 2
-        x: 243
-        y: 56
-        width: 21
-        height: 144
+        x: 226
+        y: 538
+        width: 6
+        height: 6
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -282,20 +257,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 580e73e4e6c2d7910800000000000000
-      internalID: 1836673075307339909
+      spriteID: 9d73384a553e8f3a0800000000000000
+      internalID: -6631300494331267111
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Light_Beams_6
+      name: BottomBubbles_5
       rect:
         serializedVersion: 2
-        x: 262
-        y: 4
-        width: 57
-        height: 196
+        x: 660
+        y: 517
+        width: 30
+        height: 51
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -304,8 +279,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 1d562c8eed310f770800000000000000
-      internalID: 8642429533032703441
+      spriteID: ddb432294fde3b290800000000000000
+      internalID: -7875689688661275683
       vertices: []
       indices: 
       edges: []
@@ -324,13 +299,12 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Light_Beams_0: -1874924324265222933
-      Light_Beams_1: 572338512685867281
-      Light_Beams_2: 4290362777379371546
-      Light_Beams_3: 6447559560900605480
-      Light_Beams_4: -2754184903755742053
-      Light_Beams_5: 1836673075307339909
-      Light_Beams_6: 8642429533032703441
+      BottomBubbles_0: -5901777275481452796
+      BottomBubbles_1: -2401313891449923477
+      BottomBubbles_2: 6213857179909281321
+      BottomBubbles_3: -4192189416123351352
+      BottomBubbles_4: -6631300494331267111
+      BottomBubbles_5: -7875689688661275683
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
