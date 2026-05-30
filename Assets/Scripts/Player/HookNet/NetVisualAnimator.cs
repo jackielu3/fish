@@ -48,15 +48,15 @@ public class NetVisualAnimator : MonoBehaviour
         ropeLineRenderer.useWorldSpace = netLineRenderer.useWorldSpace;
     }
 
-    public void PlayNetMorph(List<Vector2> rawLoopPoints, List<Vector2> rawRopePoints, Transform ropePoint, NetArea netArea)
+    public void PlayNetMorph(List<Vector2> rawLoopPoints, List<Vector2> rawRopePoints, Transform ropePoint, NetArea netArea, System.Action onComplete = null)
     {
         boatRopePoint = ropePoint;
 
         StopAllCoroutines();
-        StartCoroutine(MorphRoutine(rawLoopPoints, rawRopePoints, netArea));
+        StartCoroutine(MorphRoutine(rawLoopPoints, rawRopePoints, netArea, onComplete));
     }
 
-    private IEnumerator MorphRoutine(List<Vector2> rawLoopPoints, List<Vector2> rawRopePoints, NetArea netArea)
+    private IEnumerator MorphRoutine(List<Vector2> rawLoopPoints, List<Vector2> rawRopePoints, NetArea netArea, System.Action onComplete)
     {
         List<Vector3> startPoints = ResampleClosedLoop(rawLoopPoints, visualPointCount);
         List<Vector3> targetPoints = BuildTeardropPoints(startPoints);
@@ -135,6 +135,8 @@ public class NetVisualAnimator : MonoBehaviour
         {
             ropeLineRenderer.SetPosition(i, targetRopePoints[i]);
         }
+
+        onComplete?.Invoke();
     }
 
     private List<Vector3> BuildTeardropPoints(List<Vector3> sourcePoints)

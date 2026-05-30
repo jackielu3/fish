@@ -15,10 +15,14 @@ public class Fish : MonoBehaviour
     [SerializeField] private float minSecsBetweenMovement = 0.5f;
     [SerializeField] private float maxSecsBetweenMovement = 1.5f;
 
-    private FishSpawner owningSpawner;
+    public FishSpawner owningSpawner;
+    
     private Rigidbody2D rb;
     private bool isMoving = false;
     private float stateTimer = 0f;
+
+    private NetArea containingNet;
+    private float containingNetPadding = 0.2f;
 
     private void Awake()
     {
@@ -52,6 +56,9 @@ public class Fish : MonoBehaviour
                 rb.linearVelocity = Vector2.zero;
             }
         }
+
+        KeepInsideSpawnBounds();
+        KeepInsideContainingNet();
     }
 
     private void ApplyRandomVelocity()
@@ -72,16 +79,6 @@ public class Fish : MonoBehaviour
         {
             FaceMovementDirection();
         }
-    }
-
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        FishSpawnBoundary boundary = collision.GetComponent<FishSpawnBoundary>();
-
-        if (boundary == null) return;
-        if (boundary.Owner != owningSpawner) return;
-
-        BounceOffNormal(boundary.BounceNormal);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -126,6 +123,85 @@ public class Fish : MonoBehaviour
 
         transform.localScale = scale;
         transform.rotation = Quaternion.Euler(0f, 0f, angle);
+    }
+
+    private void KeepInsideSpawnBounds()
+    {
+        if (owningSpawner == null) return;
+
+        Bounds bounds = owningSpawner.GetSpawnBounds();
+
+        Vector2 pos = rb.position;
+        Vector2 velocity = rb.linearVelocity;
+
+        bool bounced = false;
+
+        if (pos.x < bounds.min.x)
+        {
+            pos.x = bounds.min.x;
+            velocity.x = Mathf.Abs(velocity.x);
+            bounced = true;
+        }
+        else if (pos.x > bounds.max.x)
+        {
+            pos.x = bounds.max.x;
+            velocity.x = -Mathf.Abs(velocity.x);
+            bounced = true;
+        }
+
+        if (pos.y < bounds.min.y)
+        {
+            pos.y = bounds.min.y;
+            velocity.y = Mathf.Abs(velocity.y);
+            bounced = true;
+        }
+        else if (pos.y > bounds.max.y)
+        {
+            pos.y = bounds.max.y;
+            velocity.y = -Mathf.Abs(velocity.y);
+            bounced = true;
+        }
+
+        if (!bounced) return;
+
+        rb.position = pos;
+
+        if (velocity.sqrMagnitude > 0.01f)
+        {
+            rb.linearVelocity = velocity.normalized * Data.moveSpeed;
+            FaceMovementDirection();
+        }
+    }
+
+    private void KeepInsideContainingNet()
+    {
+        if (containingNet == null) return;
+
+        if (!containingNet.TryGetInsideCorrection(
+            rb.position,
+            containingNetPadding,
+            out Vector2 correctedPosition,
+            out Vector2 inwardNormal
+        ))
+        {
+            return;
+        }
+
+        rb.position = correctedPosition;
+
+        Vector2 velocity = rb.linearVelocity;
+
+        if (velocity.sqrMagnitude > 0.01f && Vector2.Dot(velocity.normalized, inwardNormal) < 0f)
+        {
+            rb.linearVelocity = Vector2.Reflect(velocity.normalized, inwardNormal) * Data.moveSpeed;
+            FaceMovementDirection();
+        }
+    }
+
+    public void SetContainingNet(NetArea net, float padding)
+    {
+        containingNet = net;
+        containingNetPadding = padding;
     }
 
     public void Catch()

@@ -1,11 +1,8 @@
 using UnityEngine;
-using System.Collections;
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class HookMovement : MonoBehaviour
 {
-    private static WaitForSeconds _waitForSeconds3 = new(3f);
-
     [Header("Values")]
     [SerializeField][ReadOnly] private Vector2 initialTransform;
     [SerializeField][ReadOnly] private Vector2 moveInput;
@@ -32,6 +29,8 @@ public class HookMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (!isMoving) return;
+
         Move();
         Turn();
     }
@@ -62,14 +61,11 @@ public class HookMovement : MonoBehaviour
         rb.MoveRotation(rb.rotation + turn);
     }
 
-    public void StopHook(GameObject brushInstance)
+    public void StopHook()
     {
         isMoving = false;
-        StartCoroutine(StopHookRoutine(brushInstance));
-    }
-
-    private IEnumerator StopHookRoutine(GameObject brushInstance) {
-        moveSpeed = 0;
+        moveSpeed = 0f;
+        moveInput = Vector2.zero;
 
         SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
 
@@ -80,24 +76,10 @@ public class HookMovement : MonoBehaviour
 
         if (hookCollider != null)
             hookCollider.enabled = false;
-
-        yield return _waitForSeconds3;
-
-        if (brushInstance != null)
-            Destroy(brushInstance);
-
-        onControlSwitch.Raise(this, "Boat");
-
-        Destroy(gameObject);
     }
 
     public Vector2 GetInitialTransform()
     {
         return initialTransform;
-    }
-
-    private bool GetIsMoving()
-    {
-        return isMoving;
     }
 }

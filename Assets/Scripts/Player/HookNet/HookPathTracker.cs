@@ -41,7 +41,7 @@ public class HookPathTracker : MonoBehaviour
     private void LateUpdate()
     {
         if (hasFinished)
-            return; 
+            return;
 
         Draw();
     }
@@ -149,12 +149,9 @@ public class HookPathTracker : MonoBehaviour
             {
                 if (tOnNewSegment < closestT)
                 {
-                    if (tOnNewSegment < closestT)
-                    {
-                        closestT = tOnNewSegment;
-                        intersection = hit;
-                        intersectedIndex = i;
-                    }
+                    closestT = tOnNewSegment;
+                    intersection = hit;
+                    intersectedIndex = i;
                 }
             }
         }
@@ -179,11 +176,17 @@ public class HookPathTracker : MonoBehaviour
 
         List<Vector2> ropePoints = BuildRopePoints(intersection, intersectedIndex);
 
-        netVisualAnimator.PlayNetMorph(loopPoints, ropePoints, boatRopePoint, netAreaInstance);
-
         onNetCreated.Raise(this, new List<Vector2>(loopPoints));
 
-        hookMovement.StopHook(brushInstance);
+        hookMovement.StopHook();
+
+        netVisualAnimator.PlayNetMorph(
+            loopPoints,
+            ropePoints,
+            boatRopePoint,
+            netAreaInstance,
+            () => ShowCatchResults(netAreaInstance)
+        );
     }
 
     private List<Vector2> BuildLoopPoints(Vector2 intersection, int intersectedIndex)
@@ -293,5 +296,22 @@ public class HookPathTracker : MonoBehaviour
     {
         cachedPoints.Add(point);
         edgeCollider.SetPoints(cachedPoints);
+    }
+
+    private void ShowCatchResults(NetArea netArea)
+    {
+        CatchResult result = netArea.CatchFish();
+
+        UIManager.Instance.CatchResultsUI.Show(result, () =>
+        {
+            netArea.DestroyCaughtFish();
+
+            if (brushInstance != null)
+                Destroy(brushInstance);
+
+            hookMovement.onControlSwitch.Raise(this, "Boat");
+
+            Destroy(gameObject);
+        });
     }
 }

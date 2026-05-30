@@ -408,12 +408,12 @@
         },
         {
             "name": "Menu",
-            "id": "18bfe4b6-8dd8-4b9b-a0e9-f3a2077686e1",
+            "id": "3617a9d3-af26-4eca-94c9-bf8fc24476fd",
             "actions": [
                 {
-                    "name": "Pause",
+                    "name": "Escape",
                     "type": "Button",
-                    "id": "8c67481c-e872-4014-bfdb-f50e38b2c401",
+                    "id": "8641d4f9-7036-4ed5-b6be-c24990f5833a",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -423,12 +423,12 @@
             "bindings": [
                 {
                     "name": "",
-                    "id": "d620aba8-8f7e-4283-9561-fb6f7a46c5f5",
+                    "id": "bf3ec747-fe4e-4504-a3dd-4a73bdb8a9b4",
                     "path": "<Keyboard>/escape",
                     "interactions": "",
                     "processors": "",
-                    "groups": ";Keyboard&Mouse;Gamepad;Touch;Joystick;XR",
-                    "action": "Pause",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "Escape",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

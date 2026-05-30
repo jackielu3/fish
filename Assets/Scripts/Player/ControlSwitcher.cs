@@ -1,6 +1,4 @@
-using System;
 using Unity.Cinemachine;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -12,6 +10,11 @@ public class ControlSwitcher : MonoBehaviour
     [SerializeField] private BoatMovement boatMovement;
     [ReadOnly] private HookMovement hookMovement;
     [SerializeField] private CameraController cameraController;
+    [SerializeField] private UIInputHandler gameplayUIInputHandler;
+
+    [Header("UI")]
+    [SerializeField] private HookTutorialManager tutorialManager;
+    [SerializeField] private BoatModeHintUI boatModeHintUI;
 
     [Header("Events")]
     public GameEvent onGamePause;
@@ -37,6 +40,8 @@ public class ControlSwitcher : MonoBehaviour
 
         menuMap.Enable();
         boatMap.Enable();
+
+        boatModeHintUI.Show();
     }
 
     public void OnMove(InputValue value)
@@ -59,6 +64,7 @@ public class ControlSwitcher : MonoBehaviour
         if (value.isPressed && boatMap.enabled)
         {
             Debug.Log("Shooting hook from boat controls");
+            tutorialManager.OnHookLaunched();
             LaunchHook();
         }
     }
@@ -70,7 +76,10 @@ public class ControlSwitcher : MonoBehaviour
         boatMap.Disable();
         hookMap.Enable();
 
+        boatModeHintUI.Hide();
+        
         boatMovement.SetMoveInput(Vector2.zero);
+        gameplayUIInputHandler.SetBoatMode(false);
     }
     public void SwitchToBoatControls()
     {
@@ -79,6 +88,9 @@ public class ControlSwitcher : MonoBehaviour
 
         hookMap.Disable();
         boatMap.Enable();
+
+        boatModeHintUI.Show();
+        gameplayUIInputHandler.SetBoatMode(true);
     }
 
     public void ControlSwitch(Component sender, object data)
@@ -88,11 +100,5 @@ public class ControlSwitcher : MonoBehaviour
         {
             SwitchToBoatControls();
         }
-    }
-
-    // MENU INPUTS
-    public void OnPause(InputValue value)
-    {
-        onGamePause.Raise(this, true);
     }
 }

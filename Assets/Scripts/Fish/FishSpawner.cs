@@ -24,8 +24,6 @@ public class FishSpawner : MonoBehaviour
 
     private void Start()
     {
-        CreateSpawnBoundaries();
-
         for (int i = 0; i < maxSpawned; i++)
         {
             SpawnFish();
@@ -60,52 +58,14 @@ public class FishSpawner : MonoBehaviour
         numSpawned++;
     }
 
-    private void CreateSpawnBoundaries()
+    public Bounds GetSpawnBounds()
     {
-        Vector2 halfSize = spawnAreaSize * 0.5f;
-        float thickness = 0.25f;
-
-        CreateBoundary(
-            "Top Boundary",
-            spawnAreaCenter + Vector3.up * halfSize.y,
-            new Vector2(spawnAreaSize.x, thickness),
-            Vector2.down
-        );
-
-        CreateBoundary(
-            "Bottom Boundary",
-            spawnAreaCenter + Vector3.down * halfSize.y,
-            new Vector2(spawnAreaSize.x, thickness),
-            Vector2.up
-        );
-
-        CreateBoundary(
-            "Left Boundary",
-            spawnAreaCenter + Vector3.left * halfSize.x,
-            new Vector2(thickness, spawnAreaSize.y),
-            Vector2.right
-        );
-
-        CreateBoundary(
-            "Right Boundary",
-            spawnAreaCenter + Vector3.right * halfSize.x,
-            new Vector2(thickness, spawnAreaSize.y),
-            Vector2.left
-        );
+        return new Bounds(spawnAreaCenter, spawnAreaSize);
     }
 
-    private void CreateBoundary(string boundaryName, Vector3 position, Vector2 size, Vector2 bounceNormal)
+    public void CaughtFish()
     {
-        GameObject boundaryObject = new GameObject(boundaryName);
-        boundaryObject.transform.SetParent(transform);
-        boundaryObject.transform.position = position;
-
-        BoxCollider2D collider = boundaryObject.AddComponent<BoxCollider2D>();
-        collider.size = size;
-        collider.isTrigger = true;
-
-        FishSpawnBoundary boundary = boundaryObject.AddComponent<FishSpawnBoundary>();
-        boundary.Initialize(this, bounceNormal);
+        numSpawned -= 1;
     }
 
     private void OnDrawGizmosSelected()

@@ -4,11 +4,17 @@ using UnityEngine.SceneManagement;
 public class PauseMenu : MonoBehaviour
 {
     [SerializeField] private GameObject pauseMenuUI;
-    public bool isPaused = false;
 
-    public void OnPause(Component sender, object data)
+    public bool IsPaused { get; private set; }
+
+    private void Awake()
     {
-        if (isPaused) Resume();
+        pauseMenuUI.SetActive(false);
+    }
+
+    public void TogglePause()
+    {
+        if (IsPaused) Resume();
         else Pause();
     }
 
@@ -16,7 +22,8 @@ public class PauseMenu : MonoBehaviour
     {
         pauseMenuUI.SetActive(true);
         Time.timeScale = 0f;
-        isPaused = true;
+        IsPaused = true;
+
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
     }
@@ -25,12 +32,7 @@ public class PauseMenu : MonoBehaviour
     {
         pauseMenuUI.SetActive(false);
         Time.timeScale = 1f;
-        isPaused = false;
-    }
-
-    private void OnPauseButtonClicked()
-    {
-        Pause();
+        IsPaused = false;
     }
 
     public void OnRestartButtonClicked()

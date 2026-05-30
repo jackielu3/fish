@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1920469105205320768}
   - component: {fileID: 8486405281323743627}
+  - component: {fileID: 161185334217206074}
   - component: {fileID: 6360325619022528295}
   m_Layer: 0
   m_Name: NetArea
@@ -80,6 +81,49 @@ PolygonCollider2D:
   m_Points:
     m_Paths: []
   m_UseDelaunayMesh: 1
+--- !u!68 &161185334217206074
+EdgeCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5843602119597783610}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_EdgeRadius: 0
+  m_Points:
+  - {x: -0.5, y: 0}
+  - {x: 0.5, y: 0}
+  m_AdjacentStartPoint: {x: 0, y: 0}
+  m_AdjacentEndPoint: {x: 0, y: 0}
+  m_UseAdjacentStartPoint: 0
+  m_UseAdjacentEndPoint: 0
 --- !u!114 &6360325619022528295
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -95,4 +139,5 @@ MonoBehaviour:
   fishLayer:
     serializedVersion: 2
     m_Bits: 2048
-  onNetCreated: {fileID: 11400000, guid: bbb7baab015803e4ebef3427891238d4, type: 2}
+  wallThickness: 0.15
+  insidePadding: 0.25
