@@ -13,10 +13,12 @@ MonoBehaviour:
   m_Name: SmallFish1
   m_EditorClassIdentifier: Assembly-CSharp::FishData
   fishName: Anchovy
+  fishColor: {r: 0.745283, g: 0.745283, b: 0.745283, a: 1}
   prefab: {fileID: 4252046002252885360, guid: 4ee9a81a69609c94e91d00c2f6da0c7d, type: 3}
   sprite: {fileID: 21300000, guid: 4db8d3ef32e499b4e8b2a52c8fa718b8, type: 3}
   closeup: {fileID: 21300000, guid: 198f34edd64fe2b4caaca72bb3d56602, type: 3}
-  value: 5
+  baseValue: 5
+  currentValue: 0
   moveSpeed: 0.5
   numberCaught: 0
-  description: 
+  description: Small fih

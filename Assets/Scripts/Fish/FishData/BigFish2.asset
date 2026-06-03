@@ -13,10 +13,12 @@ MonoBehaviour:
   m_Name: BigFish2
   m_EditorClassIdentifier: Assembly-CSharp::FishData
   fishName: Bluefin Tuna
+  fishColor: {r: 0.14901961, g: 0.16862746, b: 0.6784314, a: 1}
   prefab: {fileID: 4252046002252885360, guid: f590986f3c5bdce44b7e0b783c474a92, type: 3}
   sprite: {fileID: 21300000, guid: ea20943a810a0de48a2859b322000d63, type: 3}
   closeup: {fileID: 21300000, guid: 55d3383524f79ee45afe69168dd0271d, type: 3}
-  value: 50
-  moveSpeed: 2
+  baseValue: 50
+  currentValue: 0
+  moveSpeed: 7
   numberCaught: 0
-  description: 
+  description: OMG, I LOVE JAPANESE FOOD

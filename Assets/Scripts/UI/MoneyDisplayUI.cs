@@ -4,19 +4,26 @@ using UnityEngine;
 public class MoneyDisplayUI : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI moneyText;
-    public float totalMoney;
+    [SerializeField] private MoneyManager moneyManager;
 
     private void Awake()
     {
-        moneyText.text = "";
+        UpdateMoneyText();
     }
 
-    public void UpdateMoneyUI(Component sender, object data)
+    private void Update()
     {
-        if (data is float valueInt)
+        UpdateMoneyText();
+    }
+
+    private void UpdateMoneyText()
+    {
+        if (moneyManager == null)
         {
-            totalMoney += valueInt;
-            moneyText.text = "$" + totalMoney.ToString("F2");
+            moneyText.text = "$0.00";
+            return;
         }
+
+        moneyText.text = "$" + moneyManager.TotalMoney.ToString("F2");
     }
 }

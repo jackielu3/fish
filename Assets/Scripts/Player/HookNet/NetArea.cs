@@ -94,14 +94,28 @@ public class NetArea : MonoBehaviour
 
         foreach (Collider2D result in overlapResults)
         {
-            if (!result.TryGetComponent<Fish>(out Fish fish)) continue;
-            if (caughtFish.Contains(fish)) continue;
+            if (result.TryGetComponent<Fish>(out Fish fish))
+            {
+                if (caughtFish.Contains(fish)) continue;
 
-            caughtFish.Add(fish);
-            fish.SetContainingNet(this, insidePadding);
-            fish.Catch();
+                caughtFish.Add(fish);
+                fish.SetContainingNet(this, insidePadding);
+                fish.Catch();
 
-            catchResult.AddFish(fish);
+                catchResult.AddFish(fish);
+                continue;
+            }
+
+            if (result.TryGetComponent<SmallRock>(out SmallRock smallRock))
+            {
+                smallRock.Catch();
+                catchResult.AddSmallRock(smallRock);
+
+                if (smallRock.owningSpawner != null)
+                    smallRock.owningSpawner.CaughtRock();
+
+                Destroy(smallRock.gameObject);
+            }
         }
 
         return catchResult;

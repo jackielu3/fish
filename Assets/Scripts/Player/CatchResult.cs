@@ -17,6 +17,19 @@ public class CatchResult
         }
 
         fishCounts[fish.Data]++;
-        totalMoney += fish.Data.value;
+        totalMoney += fish.Data.currentValue;
+    }
+
+    public void AddSmallRock(SmallRock rock)
+    {
+        if (rock == null || rock.Data == null) return;
+
+        if (!fishCounts.ContainsKey(rock.Data))
+        {
+            fishCounts.Add(rock.Data, 0);
+        }
+
+        fishCounts[rock.Data]++;
+        totalMoney += rock.Data.currentValue;
     }
 }

@@ -28,7 +28,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: 86da80c5fcd3f2242aeba10c9312154d, type: 3}
+        m_Texture: {fileID: 2800000, guid: 0c54b32e950f47e4c8833298ea07ca73, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MaskTex:
@@ -44,7 +44,7 @@ Material:
     - _EnableExternalAlpha: 0
     - _HoleRadius: 1
     - _Length: 1
-    - _TileWorldSize: 1
+    - _TileWorldSize: 0.15
     - _Width: 1
     - _ZWrite: 0
     m_Colors:

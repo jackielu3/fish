@@ -13,7 +13,7 @@ public class CatchResultRowUI : MonoBehaviour
     {
         fishNameText.text = $"{fishData.fishName}";
         quantityText.text = $"x{quantity}";
-        moneyText.text = $"${fishData.value * quantity:0}";
+        moneyText.text = $"${fishData.currentValue * quantity:0}";
 
         if (fishImage != null)
         {

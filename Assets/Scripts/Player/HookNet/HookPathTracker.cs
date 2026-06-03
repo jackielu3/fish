@@ -1,6 +1,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
+public class LineLengthTier
+{
+    public string tierName;
+    public float maxLineLength;
+}
+
 [RequireComponent(typeof(HookMovement))]
 public class HookPathTracker : MonoBehaviour
 {
@@ -19,13 +26,23 @@ public class HookPathTracker : MonoBehaviour
 
     [SerializeField] private float intersectionEpsilon = 0.03f;
 
-
     [Header("Collision")]
     private EdgeCollider2D edgeCollider;
     [SerializeField][ReadOnly] private List<Vector2> cachedPoints = new();
 
     [Header("Net Area")]
     [SerializeField] private GameObject netAreaPrefab;
+
+    private UpgradeManager upgradeManager;
+
+    [Header("Line Length")]
+    [SerializeField][ReadOnly] private float lineUsed;
+    [SerializeField][ReadOnly] private float lineRemaining;
+
+    public float LineUsed => lineUsed;
+    public float MaxLineLength =>
+        upgradeManager == null ? 20f : upgradeManager.GetUpgradeValue(UpgradeType.RopeLength);
+    public float LineRemaining => lineRemaining;
 
     [Header("Events")]
     [SerializeField] private GameEvent onNetCreated;
@@ -46,9 +63,13 @@ public class HookPathTracker : MonoBehaviour
         Draw();
     }
 
-    public void Initialize(Transform boatPoint)
+    public void Initialize(Transform boatPoint, UpgradeManager manager)
     {
         boatRopePoint = boatPoint;
+        upgradeManager = manager;
+
+        lineUsed = 0f;
+        lineRemaining = MaxLineLength;
     }
 
     private void CreateBrush()
@@ -114,6 +135,17 @@ public class HookPathTracker : MonoBehaviour
     {
         Vector2 previousPoint = cachedPoints[^1];
 
+        float addedLength = Vector2.Distance(previousPoint, pointPos);
+
+        if (lineUsed + addedLength >= MaxLineLength)
+        {
+            OutOfLine();
+            return;
+        }
+
+        lineUsed += addedLength;
+        lineRemaining = MaxLineLength - lineUsed;
+
         if (CheckForIntersection(previousPoint, pointPos, out Vector2 intersection, out int intersectedIndex)) // MAYBE ADD A CHECK FOR NUMBER OF NETS
         {
             FinishPath(intersection, intersectedIndex);
@@ -125,6 +157,21 @@ public class HookPathTracker : MonoBehaviour
 
         RefreshLineRenderer();
         RefreshEdgeCollider();
+    }
+
+    private void OutOfLine()
+    {
+        hasFinished = true;
+
+        hookMovement.StopHook();
+
+        if (brushInstance != null)
+            Destroy(brushInstance);
+
+        hookMovement.onControlSwitch.Raise(this, "Boat");
+
+        Destroy(gameObject);
+
     }
 
     private bool CheckForIntersection(Vector2 newA, Vector2 newB, out Vector2 intersection, out int intersectedIndex)

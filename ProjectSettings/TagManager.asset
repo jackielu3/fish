@@ -19,7 +19,7 @@ TagManager:
   - 
   - 
   - Fish
-  - 
+  - BigRock
   - 
   - 
   - 
@@ -66,6 +66,12 @@ TagManager:
     locked: 0
   - name: Fish
     uniqueID: 2659539187
+    locked: 0
+  - name: Player Net
+    uniqueID: 625907667
+    locked: 0
+  - name: Rock
+    uniqueID: 3373220051
     locked: 0
   - name: Player Hook
     uniqueID: 3313737009

@@ -4,13 +4,17 @@ using UnityEngine;
 public class FishData : ScriptableObject
 {
     public string fishName;
+    public Color fishColor;
 
     public Fish prefab;
 
     public Sprite sprite;
     public Sprite closeup;
-    
-    public float value;
+
+    [Header("Economy")]
+    public float baseValue;
+    [ReadOnly] public float currentValue;
+
     public float moveSpeed;
 
     public int numberCaught;

@@ -104,7 +104,7 @@ public class CameraController : MonoBehaviour
 
     public void FollowTarget(Transform target)
     {
-        Debug.Log("SWITCHING CAMERA TARGETS: " + target.name);
+        // Debug.Log("SWITCHING CAMERA TARGETS: " + target.name);
 
         followTarget = target;
     }

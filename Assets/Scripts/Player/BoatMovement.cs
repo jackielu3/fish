@@ -8,7 +8,8 @@ public class BoatMovement : MonoBehaviour
     [Header("References")]
     [SerializeField] private GameObject hookPrefab;
     [SerializeField] private Transform hookSpawn;
-    
+
+    [SerializeField] private UpgradeManager upgradeManager;
 
     private Rigidbody2D rb;
 
@@ -41,7 +42,13 @@ public class BoatMovement : MonoBehaviour
     {
         Quaternion spawnRotation = Quaternion.Euler(0f, 0f, 0f);
         GameObject hook = Instantiate(hookPrefab, hookSpawn.position, spawnRotation);
-        hook.GetComponent<HookPathTracker>().Initialize(hookSpawn);
+
+        HookMovement hookMovement = hook.GetComponent<HookMovement>();
+        HookPathTracker hookPathTracker = hook.GetComponent<HookPathTracker>();
+
+        hookMovement.Initialize(upgradeManager);
+        hookPathTracker.Initialize(hookSpawn, upgradeManager);
+
         return hook;
     }
 }

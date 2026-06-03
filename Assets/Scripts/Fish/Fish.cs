@@ -6,7 +6,7 @@ public class Fish : MonoBehaviour
     public FishData Data { get; private set; }
 
     [Header("Events")]
-    public GameEvent onMoneyEarned;
+    [SerializeField] private GameEvent onMoneyEarned;
 
     [Header("Movement")]
     [SerializeField] private float movementAngleRandomness = 30;
@@ -206,7 +206,8 @@ public class Fish : MonoBehaviour
 
     public void Catch()
     {
-        onMoneyEarned.Raise(this, Data.value);
+        Data.numberCaught++;
+        onMoneyEarned.Raise(this, Data.currentValue);
     }
 
     public bool IsMoving() => isMoving;

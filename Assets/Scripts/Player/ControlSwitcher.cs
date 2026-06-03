@@ -14,7 +14,8 @@ public class ControlSwitcher : MonoBehaviour
 
     [Header("UI")]
     [SerializeField] private HookTutorialManager tutorialManager;
-    [SerializeField] private BoatModeHintUI boatModeHintUI;
+    [SerializeField] private BoatModeUI boatModeUI;
+    [SerializeField] private LineLengthUI lineLengthUI;
 
     [Header("Events")]
     public GameEvent onGamePause;
@@ -41,7 +42,7 @@ public class ControlSwitcher : MonoBehaviour
         menuMap.Enable();
         boatMap.Enable();
 
-        boatModeHintUI.Show();
+        boatModeUI.Show();
     }
 
     public void OnMove(InputValue value)
@@ -71,12 +72,15 @@ public class ControlSwitcher : MonoBehaviour
 
     private void LaunchHook()
     {
-        hookMovement = boatMovement.LaunchHook().GetComponent<HookMovement>();        
+        hookMovement = boatMovement.LaunchHook().GetComponent<HookMovement>();
         cameraController.FollowTarget(hookMovement.transform);
         boatMap.Disable();
         hookMap.Enable();
 
-        boatModeHintUI.Hide();
+        HookPathTracker tracker = hookMovement.GetComponent<HookPathTracker>();
+        lineLengthUI.SetHook(tracker);
+
+        boatModeUI.Hide();
         
         boatMovement.SetMoveInput(Vector2.zero);
         gameplayUIInputHandler.SetBoatMode(false);
@@ -88,8 +92,9 @@ public class ControlSwitcher : MonoBehaviour
 
         hookMap.Disable();
         boatMap.Enable();
+        lineLengthUI.ClearHook();
 
-        boatModeHintUI.Show();
+        boatModeUI.Show();
         gameplayUIInputHandler.SetBoatMode(true);
     }
 

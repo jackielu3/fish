@@ -19,6 +19,11 @@ public class FishSpawner : MonoBehaviour
     [SerializeField] private Vector2 gizmoSpriteSize = Vector2.one;
     [SerializeField] private Vector3 labelOffset = Vector3.up * 1.5f;
 
+    [Header("Obstacle Avoidance")]
+    [SerializeField] private LayerMask bigRockLayer;
+    [SerializeField] private float fishSpawnCheckRadius = 0.4f;
+    [SerializeField] private int maxSpawnAttempts = 30;
+
     private float timer = 0f;
     [SerializeField] private float secsBetweenSpawn = 3f;
 
@@ -42,20 +47,41 @@ public class FishSpawner : MonoBehaviour
         }
     }
 
-    private void SpawnFish()
+private void SpawnFish()
+{
+    if (!TryGetSpawnPosition(out Vector2 spawnPos))
+        return;
+
+    Fish fish = Instantiate(fishType.prefab, spawnPos, Quaternion.identity).GetComponent<Fish>();
+    fish.Initialize(fishType, this);
+
+    timer = 0f;
+    numSpawned++;
+}
+
+    private bool TryGetSpawnPosition(out Vector2 spawnPos)
     {
         Vector2 halfSize = spawnAreaSize * 0.5f;
 
-        Vector2 spawnPos = new(
-            Random.Range(spawnAreaCenter.x - halfSize.x, spawnAreaCenter.x + halfSize.x),
-            Random.Range(spawnAreaCenter.y - halfSize.y, spawnAreaCenter.y + halfSize.y)
-        );
+        for (int i = 0; i < maxSpawnAttempts; i++)
+        {
+            spawnPos = new Vector2(
+                Random.Range(spawnAreaCenter.x - halfSize.x, spawnAreaCenter.x + halfSize.x),
+                Random.Range(spawnAreaCenter.y - halfSize.y, spawnAreaCenter.y + halfSize.y)
+            );
 
-        Fish fish = Instantiate(fishType.prefab, spawnPos, Quaternion.identity).GetComponent<Fish>(); ;
-        fish.Initialize(fishType, this);
+            bool insideBigRock = Physics2D.OverlapCircle(
+                spawnPos,
+                fishSpawnCheckRadius,
+                bigRockLayer
+            );
 
-        timer = 0f;
-        numSpawned++;
+            if (!insideBigRock)
+                return true;
+        }
+
+        spawnPos = Vector2.zero;
+        return false;
     }
 
     public Bounds GetSpawnBounds()
