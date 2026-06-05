@@ -15,8 +15,15 @@ public class Fish : MonoBehaviour
     [SerializeField] private float minSecsBetweenMovement = 0.5f;
     [SerializeField] private float maxSecsBetweenMovement = 1.5f;
 
+    [Header("Collision")]
+    [SerializeField] private LayerMask obstacleLayer;
+    [SerializeField] private float collisionSkin = 0.02f;
+
+    private readonly RaycastHit2D[] hitResults = new RaycastHit2D[4];
+    private ContactFilter2D obstacleFilter;
+
     public FishSpawner owningSpawner;
-    
+
     private Rigidbody2D rb;
     private bool isMoving = false;
     private float stateTimer = 0f;
@@ -27,6 +34,11 @@ public class Fish : MonoBehaviour
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+
+        obstacleFilter = new ContactFilter2D();
+        obstacleFilter.SetLayerMask(obstacleLayer);
+        obstacleFilter.useLayerMask = true;
+        obstacleFilter.useTriggers = false;
     }
 
     public void Initialize(FishData data, FishSpawner spawner)
@@ -57,6 +69,8 @@ public class Fish : MonoBehaviour
             }
         }
 
+        MoveWithCollision();
+
         KeepInsideSpawnBounds();
         KeepInsideContainingNet();
     }
@@ -81,29 +95,40 @@ public class Fish : MonoBehaviour
         }
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void MoveWithCollision()
     {
-        if (!collision.gameObject.CompareTag("Wall")) return;
+        Vector2 movement = rb.linearVelocity * Time.fixedDeltaTime;
 
-        Vector2 normal = collision.GetContact(0).normal;
-        BounceOffNormal(normal);
-    }
+        if (movement.sqrMagnitude <= 0.000001f)
+            return;
 
-    private void BounceOffNormal(Vector2 normal)
-    {
-        Vector2 currentDirection = rb.linearVelocity.normalized;
+        int hitCount = rb.Cast(
+            movement.normalized,
+            obstacleFilter,
+            hitResults,
+            movement.magnitude + collisionSkin
+        );
 
-        if (currentDirection.sqrMagnitude < 0.01f)
+        if (hitCount > 0)
         {
-            currentDirection = -transform.right;
+            RaycastHit2D closestHit = hitResults[0];
+
+            for (int i = 1; i < hitCount; i++)
+            {
+                if (hitResults[i].distance < closestHit.distance)
+                    closestHit = hitResults[i];
+            }
+
+            Vector2 reflected = Vector2.Reflect(movement.normalized, closestHit.normal).normalized;
+            rb.linearVelocity = reflected * Data.moveSpeed;
+
+            FaceMovementDirection();
+            return;
         }
 
-        Vector2 reflectedDirection = Vector2.Reflect(currentDirection, normal).normalized;
-
-        rb.linearVelocity = reflectedDirection * Data.moveSpeed;
-
-        FaceMovementDirection();
+        rb.MovePosition(rb.position + movement);
     }
+
 
     private void FaceMovementDirection()
     {

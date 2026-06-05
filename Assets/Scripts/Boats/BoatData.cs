@@ -39,5 +39,8 @@ public class BoatData : ScriptableObject
     public float cost;
     public float passiveIncomePerSecond;
 
+    [Header("Player Boat")]
+    public Vector2 hookSpawnLocalPosition;
+
     public List<BoatEffect> effects = new();
 }

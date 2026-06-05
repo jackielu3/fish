@@ -32,8 +32,6 @@ public class UpgradeShopUI : MonoBehaviour
     {
         if (detailsRoot != null)
             detailsRoot.SetActive(false);
-
-        buyButton.onClick.AddListener(BuySelectedUpgrade);
     }
 
     private void OnEnable()
@@ -51,12 +49,20 @@ public class UpgradeShopUI : MonoBehaviour
         SelectUpgrade(UpgradeType.HookSpeed);
     }
 
+    public void SelectInitialDiveLaunchUpgrade()
+    {
+        SelectUpgrade(UpgradeType.InitialDiveLaunch);
+    }
+
     private void SelectUpgrade(UpgradeType type)
     {
         selectedUpgradeType = type;
 
         if (detailsRoot != null)
             detailsRoot.SetActive(true);
+
+        buyButton.onClick.RemoveAllListeners();
+        buyButton.onClick.AddListener(BuySelectedUpgrade);
 
         RefreshDetails();
     }

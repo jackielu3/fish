@@ -26,6 +26,7 @@ public class HookMovement : MonoBehaviour
     [Header("Collision")]
     [SerializeField] private LayerMask obstacleLayer;
     [SerializeField] private float collisionSkin = 0.02f;
+    [SerializeField] private int collisionIterations = 3;
     private ContactFilter2D obstacleFilter;
 
     private UpgradeManager upgradeManager;
@@ -48,13 +49,19 @@ public class HookMovement : MonoBehaviour
         obstacleFilter.useTriggers = false;
     }
 
-    public void Initialize(UpgradeManager manager)
+    public void Initialize(UpgradeManager manager, BoatManager boatManager)
     {
         upgradeManager = manager;
 
         if (upgradeManager != null)
         {
             moveSpeed = upgradeManager.GetUpgradeValue(UpgradeType.HookSpeed);
+        }
+
+        if (boatManager != null)
+        {
+            moveSpeed += boatManager.GetActiveEffectAmount(BoatEffectType.IncreaseHookTurnSpeed) / 10;
+            turnSpeed += boatManager.GetActiveEffectAmount(BoatEffectType.IncreaseHookTurnSpeed) * 10;
         }
     }
 
@@ -71,62 +78,80 @@ public class HookMovement : MonoBehaviour
         moveInput = value;
     }
 
+    public void SetMovementEnabled(bool enabled)
+    {
+        isMoving = enabled;
+
+        if (!enabled)
+            moveInput = Vector2.zero;
+    }
+
+    public void MoveWithoutCollision(Vector2 targetPosition)
+    {
+        rb.MovePosition(targetPosition);
+    }
+
     private void Move()
     {
-        Vector2 movement = moveSpeed * Time.fixedDeltaTime * -transform.up;
+        Vector2 remainingMovement = moveSpeed * Time.fixedDeltaTime * -transform.up;
 
-        if (movement.sqrMagnitude <= 0.000001f)
-            return;
-
-        Vector2 direction = movement.normalized;
-        float distance = movement.magnitude;
-
-        int hitCount = rb.Cast(
-            direction,
-            obstacleFilter,
-            hitResults,
-            distance + collisionSkin
-        );
-
-        if (hitCount > 0)
+        for (int i = 0; i < collisionIterations; i++)
         {
-            RaycastHit2D closestHit = hitResults[0];
+            if (remainingMovement.sqrMagnitude <= 0.000001f)
+                return;
 
-            for (int i = 1; i < hitCount; i++)
+            Vector2 direction = remainingMovement.normalized;
+            float distance = remainingMovement.magnitude;
+
+            int hitCount = rb.Cast(
+                direction,
+                obstacleFilter,
+                hitResults,
+                distance + collisionSkin
+            );
+
+            if (hitCount == 0)
             {
-                if (hitResults[i].distance < closestHit.distance)
-                    closestHit = hitResults[i];
-            }
-
-            if (((1 << closestHit.collider.gameObject.layer) & obstacleLayer) != 0)
-            {
-                Vector2 slideMovement = Vector2.Perpendicular(closestHit.normal);
-
-                if (Vector2.Dot(slideMovement, movement) < 0f)
-                    slideMovement = -slideMovement;
-
-                Vector2 targetPosition = rb.position + slideMovement * distance;
-
-                if (useBounds)
-                {
-                    targetPosition.x = Mathf.Clamp(targetPosition.x, minBounds.x, maxBounds.x);
-                    targetPosition.y = Mathf.Clamp(targetPosition.y, minBounds.y, maxBounds.y);
-                }
-
-                rb.MovePosition(targetPosition);
+                MoveTo(rb.position + remainingMovement);
                 return;
             }
+
+            RaycastHit2D closestHit = GetClosestHit(hitCount);
+
+            float safeDistance = Mathf.Max(0f, closestHit.distance - collisionSkin);
+            Vector2 safeMovement = direction * safeDistance;
+
+            MoveTo(rb.position + safeMovement);
+
+            Vector2 leftoverMovement = remainingMovement - safeMovement;
+            remainingMovement =
+                leftoverMovement -
+                Vector2.Dot(leftoverMovement, closestHit.normal) * closestHit.normal;
+        }
+    }
+
+    private RaycastHit2D GetClosestHit(int hitCount)
+    {
+        RaycastHit2D closestHit = hitResults[0];
+
+        for (int i = 1; i < hitCount; i++)
+        {
+            if (hitResults[i].distance < closestHit.distance)
+                closestHit = hitResults[i];
         }
 
-        Vector2 normalTargetPosition = rb.position + movement;
+        return closestHit;
+    }
 
+    private void MoveTo(Vector2 targetPosition)
+    {
         if (useBounds)
         {
-            normalTargetPosition.x = Mathf.Clamp(normalTargetPosition.x, minBounds.x, maxBounds.x);
-            normalTargetPosition.y = Mathf.Clamp(normalTargetPosition.y, minBounds.y, maxBounds.y);
+            targetPosition.x = Mathf.Clamp(targetPosition.x, minBounds.x, maxBounds.x);
+            targetPosition.y = Mathf.Clamp(targetPosition.y, minBounds.y, maxBounds.y);
         }
 
-        rb.MovePosition(normalTargetPosition);
+        rb.MovePosition(targetPosition);
     }
 
     private void Turn()
@@ -151,6 +176,15 @@ public class HookMovement : MonoBehaviour
 
         if (hookCollider != null)
             hookCollider.enabled = false;
+    }
+
+    public void FaceDirection(Vector2 direction)
+    {
+        if (direction.sqrMagnitude <= 0.0001f)
+            return;
+
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg + 90f;
+        rb.MoveRotation(angle);
     }
 
     public Vector2 GetInitialTransform()

@@ -1,6 +1,7 @@
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
+using System.Collections.Generic;
 using UnityEngine;
 
 public class FishSpawner : MonoBehaviour
@@ -24,19 +25,30 @@ public class FishSpawner : MonoBehaviour
     [SerializeField] private float fishSpawnCheckRadius = 0.4f;
     [SerializeField] private int maxSpawnAttempts = 30;
 
+    [Header("Spawner State")]
+    [SerializeField] private bool isSpawnerActive = true;
+    [SerializeField] private bool spawnAllOnStart = true;
+
+    private readonly List<Fish> spawnedFish = new();
+
     private float timer = 0f;
     [SerializeField] private float secsBetweenSpawn = 3f;
 
     private void Start()
     {
+        if (!spawnAllOnStart) return;
+
         for (int i = 0; i < maxSpawned; i++)
         {
             SpawnFish();
         }
+
+        SetSpawnerActive(isSpawnerActive);
     }
 
     private void Update()
     {
+        if (!isSpawnerActive) return;
         if (numSpawned >= maxSpawned) return;
 
         timer += Time.deltaTime;
@@ -47,17 +59,35 @@ public class FishSpawner : MonoBehaviour
         }
     }
 
-private void SpawnFish()
-{
-    if (!TryGetSpawnPosition(out Vector2 spawnPos))
-        return;
+    private void SpawnFish()
+    {
+        if (!TryGetSpawnPosition(out Vector2 spawnPos))
+            return;
 
-    Fish fish = Instantiate(fishType.prefab, spawnPos, Quaternion.identity).GetComponent<Fish>();
-    fish.Initialize(fishType, this);
+        Fish fish = Instantiate(fishType.prefab, spawnPos, Quaternion.identity).GetComponent<Fish>();
+        fish.Initialize(fishType, this);
+        spawnedFish.Add(fish);
+        fish.gameObject.SetActive(isSpawnerActive);
 
-    timer = 0f;
-    numSpawned++;
-}
+        timer = 0f;
+        numSpawned++;
+    }
+
+    public void SetSpawnerActive(bool active)
+    {
+        isSpawnerActive = active;
+
+        for (int i = spawnedFish.Count - 1; i >= 0; i--)
+        {
+            if (spawnedFish[i] == null)
+            {
+                spawnedFish.RemoveAt(i);
+                continue;
+            }
+
+            spawnedFish[i].gameObject.SetActive(isSpawnerActive);
+        }
+    }
 
     private bool TryGetSpawnPosition(out Vector2 spawnPos)
     {
@@ -89,9 +119,12 @@ private void SpawnFish()
         return new Bounds(spawnAreaCenter, spawnAreaSize);
     }
 
-    public void CaughtFish()
+    public void CaughtFish(Fish fish = null)
     {
         numSpawned -= 1;
+
+        if (fish != null)
+            spawnedFish.Remove(fish);
     }
 
     private void OnDrawGizmosSelected()

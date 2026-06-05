@@ -15,6 +15,7 @@ public class HookPathTracker : MonoBehaviour
     [SerializeField] private HookMovement hookMovement;
     private NetVisualAnimator netVisualAnimator;
     private Transform boatRopePoint;
+    private BoatManager boatManager;
 
     [Header("Line Renderer")]
     private LineRenderer currentLineRenderer;
@@ -43,6 +44,7 @@ public class HookPathTracker : MonoBehaviour
     public float MaxLineLength =>
         upgradeManager == null ? 20f : upgradeManager.GetUpgradeValue(UpgradeType.RopeLength);
     public float LineRemaining => lineRemaining;
+    private bool countLineUsage = true;
 
     [Header("Events")]
     [SerializeField] private GameEvent onNetCreated;
@@ -63,10 +65,11 @@ public class HookPathTracker : MonoBehaviour
         Draw();
     }
 
-    public void Initialize(Transform boatPoint, UpgradeManager manager)
+    public void Initialize(Transform boatPoint, UpgradeManager manager, BoatManager newBoatManager)
     {
         boatRopePoint = boatPoint;
         upgradeManager = manager;
+        boatManager = newBoatManager;
 
         lineUsed = 0f;
         lineRemaining = MaxLineLength;
@@ -131,20 +134,40 @@ public class HookPathTracker : MonoBehaviour
         AddPoint(currentPos);
     }
 
+    public void SetLineUsageEnabled(bool enabled)
+    {
+        countLineUsage = enabled;
+
+        if (enabled)
+        {
+            lineUsed = 0f;
+            lineRemaining = MaxLineLength;
+        }
+    }
+
     private void AddPoint(Vector2 pointPos)
     {
         Vector2 previousPoint = cachedPoints[^1];
 
         float addedLength = Vector2.Distance(previousPoint, pointPos);
 
-        if (lineUsed + addedLength >= MaxLineLength)
+        if (countLineUsage)
         {
-            OutOfLine();
-            return;
-        }
+            if (boatManager != null)
+            {
+                float reductionPercent = boatManager.GetActiveEffectAmount(BoatEffectType.ReduceLineUsage);
+                addedLength *= 1f - reductionPercent;
+            }
 
-        lineUsed += addedLength;
-        lineRemaining = MaxLineLength - lineUsed;
+            if (lineUsed + addedLength >= MaxLineLength)
+            {
+                OutOfLine();
+                return;
+            }
+
+            lineUsed += addedLength;
+            lineRemaining = MaxLineLength - lineUsed;
+        }
 
         if (CheckForIntersection(previousPoint, pointPos, out Vector2 intersection, out int intersectedIndex)) // MAYBE ADD A CHECK FOR NUMBER OF NETS
         {

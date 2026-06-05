@@ -129,7 +129,7 @@ public class NetArea : MonoBehaviour
 
             if (fish.owningSpawner != null)
             {
-                fish.owningSpawner.CaughtFish();
+                fish.owningSpawner.CaughtFish(fish);
             }
 
             Destroy(fish.gameObject);

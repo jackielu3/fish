@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 226b3c7fb01b9cd459193fe218e29d06, type: 3}
+  m_Name: SmallRock
+  m_EditorClassIdentifier: Assembly-CSharp::FishData
+  fishName: 
+  fishColor: {r: 0.3018868, g: 0.3018868, b: 0.3018868, a: 1}
+  prefab: {fileID: 0}
+  sprite: {fileID: 21300000, guid: b40547e0080bbb5419030606e4839ec9, type: 3}
+  closeup: {fileID: 21300000, guid: 587daa3c9afc9cb4183a624276aa629e, type: 3}
+  baseValue: -20
+  currentValue: 0
+  moveSpeed: 0
+  numberCaught: 0
+  description: Rocky

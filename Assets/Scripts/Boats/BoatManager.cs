@@ -20,6 +20,13 @@ public class BoatManager : MonoBehaviour
 
     [Header("Boats")]
     [SerializeField] private List<BoatEntry> boats = new();
+    [SerializeField][ReadOnly] private BoatData activeBoat;
+
+    [Header("Events")]
+    [SerializeField] private GameEvent onActiveBoatChanged;
+
+    public BoatData ActiveBoat => activeBoat;
+    public bool HasActiveBoat => activeBoat != null;
 
     private void Awake()
     {
@@ -38,6 +45,11 @@ public class BoatManager : MonoBehaviour
     private void Start()
     {
         StartCoroutine(PassiveIncomeRoutine());
+    }
+
+    public bool IsActiveBoat(BoatData boatData)
+    {
+        return activeBoat == boatData;
     }
 
     private IEnumerator PassiveIncomeRoutine()
@@ -62,10 +74,14 @@ public class BoatManager : MonoBehaviour
         if (!moneyManager.TrySpendMoney(boatData.cost)) return false;
 
         entry.isOwned = true;
-        RecalculateFishValues();
 
         if (entry.backgroundBoatObject != null)
             entry.backgroundBoatObject.SetActive(true);
+
+        if (activeBoat == null)
+            activeBoat = boatData;
+
+        RecalculateFishValues();
 
         return true;
     }
@@ -76,12 +92,9 @@ public class BoatManager : MonoBehaviour
         {
             float bonusPercent = 0f;
 
-            foreach (BoatEntry entry in boats)
+            if (activeBoat != null)
             {
-                if (!entry.isOwned || entry.boatData == null)
-                    continue;
-
-                foreach (BoatEffect effect in entry.boatData.effects)
+                foreach (BoatEffect effect in activeBoat.effects)
                 {
                     if (effect.effectType != BoatEffectType.FishValueBonus)
                         continue;
@@ -118,8 +131,43 @@ public class BoatManager : MonoBehaviour
         return total;
     }
 
+    public float GetActiveEffectAmount(BoatEffectType effectType)
+    {
+        if (activeBoat == null) return 0f;
+
+        float total = 0f;
+
+        foreach (BoatEffect effect in activeBoat.effects)
+        {
+            if (effect.effectType == effectType)
+                total += effect.amount;
+        }
+
+        return total;
+    }
+
+    public bool HasActiveEffect(BoatEffectType effectType)
+    {
+        return GetActiveEffectAmount(effectType) > 0f;
+    }
+
     public BoatEntry GetBoatEntry(BoatData boatData)
     {
         return boats.Find(entry => entry.boatData == boatData);
+    }
+
+    public bool TrySwitchBoat(BoatData boatData)
+    {
+        BoatEntry entry = GetBoatEntry(boatData);
+
+        if (entry == null) return false;
+        if (!entry.isOwned) return false;
+
+        activeBoat = boatData;
+        RecalculateFishValues();
+
+        onActiveBoatChanged.Raise(this, activeBoat);
+
+        return true;
     }
 }

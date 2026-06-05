@@ -4,7 +4,8 @@ using UnityEngine;
 public enum UpgradeType
 {
     RopeLength,
-    HookSpeed
+    HookSpeed,
+    InitialDiveLaunch
 }
 
 [System.Serializable]

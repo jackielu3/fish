@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class MoneyManager : MonoBehaviour
 {
-    [SerializeField][ReadOnly] private float totalMoney;
+    [SerializeField][ReadOnly] private float totalMoney = 10000f;
 
     public float TotalMoney => totalMoney;
     public int BoatsOwned { get; private set; }
@@ -11,7 +11,7 @@ public class MoneyManager : MonoBehaviour
     private void Awake()
     {
         BoatsOwned = 0;
-        totalMoney = 0f;
+        totalMoney = 10000f;
     }
 
     private void Start()

@@ -17,10 +17,10 @@ TagManager:
   - 
   - 
   - 
-  - 
+  - Player
   - Fish
   - BigRock
-  - 
+  - SmallRock
   - 
   - 
   - 
@@ -48,6 +48,9 @@ TagManager:
     locked: 0
   - name: Islands
     uniqueID: 2396620345
+    locked: 0
+  - name: Background Boat
+    uniqueID: 3114017381
     locked: 0
   - name: Back Water
     uniqueID: 2246979745

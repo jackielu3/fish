@@ -7,6 +7,7 @@ public class BoatShopUI : MonoBehaviour
     [Header("References")]
     [SerializeField] private BoatManager boatManager;
     [SerializeField] private MoneyManager moneyManager;
+    [SerializeField] private BoatMovement boatMovement;
 
     [Header("Details UI")]
     [SerializeField] private GameObject detailsRoot;
@@ -22,8 +23,13 @@ public class BoatShopUI : MonoBehaviour
     [Header("Button")]
     [SerializeField] private Sprite buyBacking;
     [SerializeField] private Sprite notEnoughBacking;
+    [SerializeField] private Sprite switchBacking;
+    [SerializeField] private Sprite activeBacking;
+
     [SerializeField] private Color buyColor;
     [SerializeField] private Color notEnoughColor;
+    [SerializeField] private Color switchColor;
+    [SerializeField] private Color activeColor;
 
     private BoatData selectedBoat;
 
@@ -75,8 +81,29 @@ public class BoatShopUI : MonoBehaviour
 
         if (isOwned)
         {
-            buyButton.interactable = false;
-            buyButtonText.text = "Owned";
+            bool isActive = boatManager.IsActiveBoat(selectedBoat);
+
+            if (isActive)
+            {
+                buyButton.interactable = false;
+
+                buyButton.image.sprite = activeBacking;
+                buyButtonText.color = activeColor;
+                buyButtonText.text = "Active";
+
+                buyButton.image.SetNativeSize();
+            }
+            else
+            {
+                buyButton.interactable = true;
+
+                buyButton.image.sprite = switchBacking;
+                buyButtonText.color = switchColor;
+                buyButtonText.text = "Switch";
+
+                buyButton.image.SetNativeSize();
+            }
+
             return;
         }
 
@@ -102,11 +129,27 @@ public class BoatShopUI : MonoBehaviour
 
     private void BuySelectedBoat()
     {
-        if (selectedBoat == null) return;
+        if (selectedBoat == null)
+            return;
+
+        bool isOwned = boatManager.IsOwned(selectedBoat);
+
+        if (isOwned)
+        {
+            boatManager.TrySwitchBoat(selectedBoat);
+            boatMovement.RefreshActiveBoatVisual();
+            RefreshDetails();
+
+            return;
+        }
 
         bool bought = boatManager.TryBuyBoat(selectedBoat);
 
         if (bought)
+        {
+            boatManager.TrySwitchBoat(selectedBoat);
+            boatMovement.RefreshActiveBoatVisual();
             RefreshDetails();
+        }
     }
 }
