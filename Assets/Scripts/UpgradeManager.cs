@@ -1,11 +1,13 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public enum UpgradeType
 {
     RopeLength,
     HookSpeed,
-    InitialDiveLaunch
+    InitialDiveLaunch,
+    NetFragments
 }
 
 [System.Serializable]
@@ -14,6 +16,7 @@ public class UpgradeTier
     public string tierName;
     [TextArea] public string description;
     public float value;
+    public float duration = 0.35f;
     public float cost;
 }
 
@@ -22,6 +25,7 @@ public class UpgradeData
 {
     public UpgradeType upgradeType;
     public string upgradeDisplayName;
+    public Sprite upgradeImage;
     public List<UpgradeTier> tiers = new();
 
     [ReadOnly] public int currentTierIndex = 0;
@@ -61,7 +65,7 @@ public class UpgradeManager : MonoBehaviour
 
         UpgradeTier nextTier = upgrade.NextTier;
 
-        if (!moneyManager.TrySpendMoney(nextTier.cost))
+        if (!moneyManager.TrySpendMoneyWithoutAffectingStats(nextTier.cost))
             return false;
 
         upgrade.currentTierIndex++;

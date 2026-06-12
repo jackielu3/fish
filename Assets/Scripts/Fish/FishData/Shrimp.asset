@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: Shrimp
   m_EditorClassIdentifier: Assembly-CSharp::FishData
   fishName: Shrimp
-  fishColor: {r: 1, g: 0.60913366, b: 0, a: 0}
+  fishColor: {r: 1, g: 0.60913366, b: 0, a: 1}
   prefab: {fileID: 1893524452675414830, guid: 6ae1f40906047fa46b894739c5d0bf0c, type: 3}
-  sprite: {fileID: 21300000, guid: a3a581855eb845f44aa1280086af8a3d, type: 3}
-  closeup: {fileID: 21300000, guid: a3a581855eb845f44aa1280086af8a3d, type: 3}
+  sprite: {fileID: 21300000, guid: c1e54259178c4d94598bac279379050d, type: 3}
+  closeup: {fileID: 21300000, guid: 97da129904a5f58438addabc01cff3e4, type: 3}
   baseValue: 1
-  currentValue: 0
+  currentValue: 1
   moveSpeed: 1
   numberCaught: 0
-  description: Shrimp is the fruit of the sea
+  description: Shrimp are found all over the world with 1000's of different species.

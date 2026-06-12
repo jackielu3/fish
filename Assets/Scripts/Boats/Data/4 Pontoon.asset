@@ -12,14 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d0191cb23eb69544aa400787c9fd322, type: 3}
   m_Name: 4 Pontoon
   m_EditorClassIdentifier: Assembly-CSharp::BoatData
-  boatName: 
-  description: Very fast boat
+  boatName: PONTOON
+  description: A small and fast boat used for fishing in shallow waters like a reef.
   boatSprite: {fileID: 21300000, guid: f5d15cba21a2c814fbcf7b8cdf46075f, type: 3}
   cost: 750
-  passiveIncomePerSecond: 1
-  hookSpawnLocalPosition: {x: 0, y: 0}
+  incomePerDive: 20
+  effectDescription: Improves speed and control of hook
   effects:
-  - effectType: 3
+  - effectType: 4
     targetFish: {fileID: 0}
     amount: 10
-    description: Better hook speed and handling
+    amountIncreasePerLevel: 2
+    maxSpawnedIncreasePerLevel: 0
+  maxLevel: 10
+  baseUpgradeCost: 100
+  upgradeCostMultiplier: 1.5
+  incomePerDiveIncreasePerLevel: 5

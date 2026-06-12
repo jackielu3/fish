@@ -18,7 +18,8 @@ MonoBehaviour:
   sprite: {fileID: 21300000, guid: eeb6fa2c82f341846aa806dd3fbf7ec6, type: 3}
   closeup: {fileID: 21300000, guid: 2437a58beb58ccd4192e163fb2153f50, type: 3}
   baseValue: 7.5
-  currentValue: 0
+  currentValue: 7.5
   moveSpeed: 0.8
   numberCaught: 0
-  description: racist
+  description: Also known as tilefish, whitefish can be found both in shallow reefs
+    and deeper kelp forests.

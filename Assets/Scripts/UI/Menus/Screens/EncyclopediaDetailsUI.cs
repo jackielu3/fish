@@ -25,15 +25,36 @@ public class EncyclopediaDetailsUI : MonoBehaviour
         if (detailsRoot != null)
             detailsRoot.SetActive(true);
 
-        fishNameText.text = fishData.fishName;
-        fishNameText.color = fishData.fishColor;
+        bool discovered = fishData.numberCaught > 0;
+
         fishImage.sprite = fishData.closeup;
         fishImage.SetNativeSize();
 
-        descriptionText.text = fishData.description;
+        if (discovered)
+        {
+            fishNameText.text = fishData.fishName;
+            fishNameText.color = fishData.fishColor;
 
-        baseValueText.text = $"Base Value: ${fishData.baseValue}";
-        currentValueText.text = $"Current Value: ${fishData.currentValue}";
-        numberCaughtText.text = $"Caught: {fishData.numberCaught}";
+            fishImage.color = Color.white;
+
+            descriptionText.text = fishData.description;
+
+            baseValueText.text = $"Base Value: ${fishData.baseValue}";
+            currentValueText.text = $"Current Value: ${fishData.currentValue}";
+            numberCaughtText.text = $"Caught: {fishData.numberCaught}";
+        }
+        else
+        {
+            fishNameText.text = "???";
+            fishNameText.color = Color.white;
+
+            fishImage.color = Color.black;
+
+            descriptionText.text = "???";
+
+            baseValueText.text = "Base Value: ???";
+            currentValueText.text = "Current Value: ???";
+            numberCaughtText.text = "Caught: 0";
+        }
     }
 }

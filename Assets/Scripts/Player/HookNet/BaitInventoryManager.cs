@@ -19,7 +19,7 @@ public class BaitInventoryManager : MonoBehaviour
     public bool TryBuyBait()
     {
         if (IsFull) return false;
-        if (!moneyManager.TrySpendMoney(baitCost)) return false;
+        if (!moneyManager.TrySpendMoneyWithoutAffectingStats(baitCost)) return false;
 
         baitCount++;
         return true;

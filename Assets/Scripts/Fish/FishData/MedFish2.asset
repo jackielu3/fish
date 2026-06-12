@@ -18,7 +18,8 @@ MonoBehaviour:
   sprite: {fileID: 21300000, guid: d1714645cc1ed1b4a9a702befdf627b3, type: 3}
   closeup: {fileID: 21300000, guid: 2ed56d1f0afa37845acfefb3ca0ce2bc, type: 3}
   baseValue: 20
-  currentValue: 0
-  moveSpeed: 1
+  currentValue: 20
+  moveSpeed: 2.5
   numberCaught: 0
-  description: ew, imagine being red
+  description: Snappers get their name from their big teeth and 'snap' sound when
+    they close their mouth.

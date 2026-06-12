@@ -21,7 +21,7 @@ TagManager:
   - Fish
   - BigRock
   - SmallRock
-  - 
+  - Oyster
   - 
   - 
   - 
@@ -67,6 +67,9 @@ TagManager:
   - name: FrontWater
     uniqueID: 497360421
     locked: 0
+  - name: Bottom
+    uniqueID: 129736457
+    locked: 0
   - name: Fish
     uniqueID: 2659539187
     locked: 0
@@ -78,9 +81,6 @@ TagManager:
     locked: 0
   - name: Player Hook
     uniqueID: 3313737009
-    locked: 0
-  - name: Bottom
-    uniqueID: 129736457
     locked: 0
   m_RenderingLayers:
   - Default

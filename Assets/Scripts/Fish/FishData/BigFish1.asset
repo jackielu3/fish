@@ -13,12 +13,13 @@ MonoBehaviour:
   m_Name: BigFish1
   m_EditorClassIdentifier: Assembly-CSharp::FishData
   fishName: Mahi-mahi
-  fishColor: {r: 0.14901961, g: 0.5214686, b: 0.6784314, a: 1}
+  fishColor: {r: 0.11921501, g: 0.5377358, b: 0.21260397, a: 1}
   prefab: {fileID: 4252046002252885360, guid: d9b71912158fa8e4aa4629b816de0a97, type: 3}
   sprite: {fileID: 21300000, guid: a0764b74481137f47beb4b8f8f54ec06, type: 3}
   closeup: {fileID: 21300000, guid: c3ac3cfb2a4cd6644ab68fc551c09901, type: 3}
   baseValue: 30
-  currentValue: 0
+  currentValue: 30
   moveSpeed: 4
   numberCaught: 0
-  description: the hyphen alternation doesn't work :(
+  description: Mahi-mahi used to be called 'dolphinfish', but was changed to avoid
+    confusing them with dolphins.

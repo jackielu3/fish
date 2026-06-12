@@ -13,7 +13,7 @@ public class BoatModeUI : MonoBehaviour
     [SerializeField] private float visibleSeconds = 1f;
     [SerializeField] private float hiddenSeconds = 0.5f;
 
-
+    public bool IsVisible => boatCanvasGroup != null && boatCanvasGroup.alpha >= 1f;
 
     private Coroutine fadeRoutine;
 

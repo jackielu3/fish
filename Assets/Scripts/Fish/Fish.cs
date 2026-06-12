@@ -232,7 +232,6 @@ public class Fish : MonoBehaviour
     public void Catch()
     {
         Data.numberCaught++;
-        onMoneyEarned.Raise(this, Data.currentValue);
     }
 
     public bool IsMoving() => isMoving;

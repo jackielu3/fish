@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 public class CatchResultsUI : MonoBehaviour
@@ -15,6 +14,9 @@ public class CatchResultsUI : MonoBehaviour
     [SerializeField] private float fadeDuration = 0.25f;
     [SerializeField] private float rowSpacing = 80f;
 
+    [Header("Events")]
+    [SerializeField] private GameEvent onMoneyEarned;
+
     private Action onDismiss;
     private bool isShowing;
 
@@ -22,24 +24,20 @@ public class CatchResultsUI : MonoBehaviour
     {
         canvasGroup.alpha = 0f;
         gameObject.SetActive(false);
-
-        continueButton.onClick.AddListener(Dismiss);
     }
 
     private void Update()
     {
         if (!isShowing) return;
-
-        if (Keyboard.current != null && Keyboard.current.anyKey.wasPressedThisFrame)
-        {
-            Dismiss();
-        }
     }
 
     public void Show(CatchResult result, Action dismissedCallback)
     {
-        if (result == null || result.fishCounts.Count == 0)
+        if (result == null || !result.HasCatchRewards)
         {
+            if (result != null)
+                ApplyResultMoney(result);
+
             dismissedCallback?.Invoke();
             return;
         }
@@ -51,13 +49,12 @@ public class CatchResultsUI : MonoBehaviour
 
         int rowIndex = 0;
 
-        foreach (var pair in result.fishCounts)
-        {
-            FishData fishData = pair.Key;
-            int quantity = pair.Value;
+        ApplyResultMoney(result);
 
+        foreach (CatchReward reward in result.rewards)
+        {
             CatchResultRowUI row = Instantiate(rowPrefab, rowsParent);
-            row.Initialize(fishData, quantity);
+            row.Initialize(reward);
 
             RectTransform rowRect = row.GetComponent<RectTransform>();
 
@@ -83,7 +80,7 @@ public class CatchResultsUI : MonoBehaviour
         StartCoroutine(FadeTo(1f));
     }
 
-    private void Dismiss()
+    public void Dismiss()
     {
         if (!isShowing) return;
 
@@ -93,7 +90,23 @@ public class CatchResultsUI : MonoBehaviour
         StartCoroutine(DismissRoutine());
     }
 
-    private IEnumerator DismissRoutine()
+    private void ApplyResultMoney(CatchResult result)
+    {
+        foreach (CatchReward reward in result.rewards)
+        {
+            onMoneyEarned.Raise(
+                this,
+                new MoneyChangeData(
+                    reward.amount,
+                    reward.displayName,
+                    reward.rewardType == CatchRewardType.LoanPayment
+                        ? MoneyChangeType.Deduction
+                        : MoneyChangeType.Earned
+                ));
+        }
+    }
+
+    public IEnumerator DismissRoutine()
     {
         yield return FadeTo(0f);
 
@@ -113,7 +126,7 @@ public class CatchResultsUI : MonoBehaviour
         }
     }
 
-    private IEnumerator FadeTo(float targetAlpha)
+    public IEnumerator FadeTo(float targetAlpha)
     {
         float startAlpha = canvasGroup.alpha;
         float timer = 0f;

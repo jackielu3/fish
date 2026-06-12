@@ -34,6 +34,13 @@ public class FishSpawner : MonoBehaviour
     private float timer = 0f;
     [SerializeField] private float secsBetweenSpawn = 3f;
 
+    private int baseMaxSpawned;
+
+    private void Awake()
+    {
+        baseMaxSpawned = maxSpawned;
+    }
+
     private void Start()
     {
         if (!spawnAllOnStart) return;
@@ -57,6 +64,11 @@ public class FishSpawner : MonoBehaviour
         {
             SpawnFish();
         }
+    }
+
+    public void SetMaxSpawnedBonus(int bonus)
+    {
+        maxSpawned = baseMaxSpawned + bonus;
     }
 
     private void SpawnFish()

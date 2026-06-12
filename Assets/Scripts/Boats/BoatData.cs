@@ -4,6 +4,7 @@ using UnityEngine;
 public enum BoatEffectType
 {
     FishValueBonus,
+    FishValueMultiplier,
     UnlockSpecialFish,
     ReduceLineUsage,
     IncreaseHookTurnSpeed,
@@ -21,9 +22,10 @@ public class BoatEffect
 
     [Header("Value")]
     public float amount;
+    public float amountIncreasePerLevel;
 
-    [TextArea]
-    public string description;
+    [Header("Special Fish Spawn Amount")]
+    public int maxSpawnedIncreasePerLevel;
 }
 
 [CreateAssetMenu(fileName = "New Boat", menuName = "Boats/Boat Data")]
@@ -37,10 +39,17 @@ public class BoatData : ScriptableObject
     public Sprite boatSprite;
 
     public float cost;
-    public float passiveIncomePerSecond;
+    public float incomePerDive;
 
-    [Header("Player Boat")]
-    public Vector2 hookSpawnLocalPosition;
+    [Header("Effect Display")]
+    [TextArea]
+    public string effectDescription;
 
     public List<BoatEffect> effects = new();
+
+    [Header("Bank Upgrades")]
+    public int maxLevel = 10;
+    public float baseUpgradeCost = 100f;
+    public float upgradeCostMultiplier = 1.5f;
+    public float incomePerDiveIncreasePerLevel = 5f;
 }

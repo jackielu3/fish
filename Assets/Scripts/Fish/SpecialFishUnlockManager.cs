@@ -10,11 +10,20 @@ public class SpecialFishUnlockManager : MonoBehaviour
         public FishSpawner fishSpawner;
     }
 
+    [System.Serializable]
+    public class OysterSpawnerEntry
+    {
+        public FishData pearlFishData;
+        public OysterSpawner oysterSpawner;
+    }
+
     [Header("References")]
     [SerializeField] private BoatManager boatManager;
 
     [Header("Special Fish Spawners")]
     [SerializeField] private List<SpecialFishSpawnerEntry> specialFishSpawners = new();
+
+    [SerializeField] private List<OysterSpawnerEntry> oysterSpawners = new();
 
     private void Start()
     {
@@ -35,7 +44,18 @@ public class SpecialFishUnlockManager : MonoBehaviour
 
             bool isUnlocked = IsSpecialFishUnlocked(entry.fishData);
 
+            int spawnBonus = boatManager.GetActiveSpecialFishSpawnBonus(entry.fishData);
+            entry.fishSpawner.SetMaxSpawnedBonus(spawnBonus);
             entry.fishSpawner.SetSpawnerActive(isUnlocked);
+        }
+
+        foreach (OysterSpawnerEntry entry in oysterSpawners)
+        {
+            if (entry.pearlFishData == null || entry.oysterSpawner == null)
+                continue;
+
+            bool isUnlocked = IsSpecialFishUnlocked(entry.pearlFishData);
+            entry.oysterSpawner.SetSpawnerActive(isUnlocked);
         }
     }
 

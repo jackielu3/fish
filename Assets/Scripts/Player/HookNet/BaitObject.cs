@@ -35,6 +35,9 @@ public class BaitObject : MonoBehaviour
     [SerializeField] private float initialSpinSpeed = 720f;
     [SerializeField] private float spinDeceleration = 2500f;
 
+    [Header("Oysters")]
+    [SerializeField] private LayerMask oysterLayer;
+
     private bool isScattering;
     private Vector3[] idleLocalPositions;
 
@@ -85,11 +88,10 @@ public class BaitObject : MonoBehaviour
 
     public void OnReturnedToBoat()
     {
-        Debug.Log("Bait returned to boat: " + gameObject.name);
 
         if (!hasSpawnedFish)
         {
-            Debug.Log("Bait spawning bonus fish");
+            OpenNearbyOysters();
             SpawnBonusFish();
             hasSpawnedFish = true;
             shouldDestroyOnNextBoatReturn = true;
@@ -101,6 +103,23 @@ public class BaitObject : MonoBehaviour
             Debug.Log("Bait despawning bonus fish");
             DestroySpawnedFish();
             Destroy(gameObject);
+        }
+    }
+
+    private void OpenNearbyOysters()
+    {
+        Collider2D[] hits = Physics2D.OverlapCircleAll(
+            transform.position,
+            spawnRadius,
+            oysterLayer
+        );
+
+        foreach (Collider2D hit in hits)
+        {
+            if (hit.TryGetComponent<Oyster>(out Oyster oyster))
+            {
+                oyster.TryOpen();
+            }
         }
     }
 

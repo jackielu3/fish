@@ -86,7 +86,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: -981230287
-  m_SortingLayer: 7
+  m_SortingLayer: 8
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: d117843e85b95ea4a9d0992ef6001bdd, type: 3}
@@ -209,6 +209,7 @@ MonoBehaviour:
   netAreaPrefab: {fileID: 5843602119597783610, guid: 00a532cbe7a73cb4cb27d82d98b8290f, type: 3}
   lineUsed: 0
   lineRemaining: 0
+  onMoneyEarned: {fileID: 11400000, guid: afe6a18e1222a0e47af8327e84d2ef48, type: 2}
   onNetCreated: {fileID: 11400000, guid: bbb7baab015803e4ebef3427891238d4, type: 2}
 --- !u!114 &6622347042514450704
 MonoBehaviour:
@@ -224,7 +225,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HookBaitDropper
   baitPrefab: {fileID: 7027063860307357847, guid: 2477aeeffdb9509419f2d7ff54ff626f, type: 3}
   chargeVisual: {fileID: 152158544874388992}
-  holdDuration: 2
+  holdDuration: 0.5
   maxBaitDropsPerDive: 3
 --- !u!114 &152158544874388992
 MonoBehaviour:

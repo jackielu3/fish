@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d0191cb23eb69544aa400787c9fd322, type: 3}
+  m_Name: 8 Longliner
+  m_EditorClassIdentifier: Assembly-CSharp::BoatData
+  boatName: LONGLINER
+  description: 'A large boat used to cast out dozens of baited fishing lines '
+  boatSprite: {fileID: 21300000, guid: 0b468e8a056d64947bdaf0f17e5f73c4, type: 3}
+  cost: 3000
+  incomePerDive: 500
+  hookSpawnLocalPosition: {x: 0, y: 0}
+  effectDescription: Raises value of Mahi-mahi and Tuna when active
+  effects:
+  - effectType: 0
+    targetFish: {fileID: 11400000, guid: cb041ae984df77b48a4198fef55ba661, type: 2}
+    amount: 0.5
+  - effectType: 0
+    targetFish: {fileID: 11400000, guid: 589e5fa129d204f4993c5cfb9ec712a9, type: 2}
+    amount: 0.5

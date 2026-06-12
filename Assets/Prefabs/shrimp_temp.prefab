@@ -84,12 +84,12 @@ SpriteRenderer:
   m_SortingLayer: 4
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: a3a581855eb845f44aa1280086af8a3d, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 6a74383084e4ba5498640994f5533d7d, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 0.41, y: 0.1}
+  m_Size: {x: 0.3, y: 0.21}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -102,25 +102,25 @@ Rigidbody2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 290424861815550810}
-  m_BodyType: 1
+  m_BodyType: 0
   m_Simulated: 1
   m_UseFullKinematicContacts: 1
   m_UseAutoMass: 0
   m_Mass: 1
-  m_LinearDamping: 0
-  m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_LinearDamping: 1
+  m_AngularDamping: 0.5
+  m_GravityScale: 0
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
-  m_Interpolate: 0
+    m_Bits: 2048
+  m_Interpolate: 1
   m_SleepingMode: 1
-  m_CollisionDetection: 0
-  m_Constraints: 0
+  m_CollisionDetection: 1
+  m_Constraints: 4
 --- !u!70 &-5302562721691703216
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -156,7 +156,7 @@ CapsuleCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_Size: {x: 0.41, y: 0.09}
+  m_Size: {x: 0.27, y: 0.21}
   m_Direction: 1
 --- !u!114 &1893524452675414830
 MonoBehaviour:
@@ -172,7 +172,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Fish
   onMoneyEarned: {fileID: 11400000, guid: afe6a18e1222a0e47af8327e84d2ef48, type: 2}
   movementAngleRandomness: 30
-  minSecsMovement: 0.1
+  minSecsMovement: 0.13
   maxSecsMovement: 0.3
   minSecsBetweenMovement: 1
   maxSecsBetweenMovement: 1.5

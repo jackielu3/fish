@@ -9,17 +9,42 @@ public class CatchResultRowUI : MonoBehaviour
     [SerializeField] private TMP_Text quantityText;
     [SerializeField] private TMP_Text moneyText;
 
-    public void Initialize(FishData fishData, int quantity)
+    public enum Type {
+        fish,
+        rocks,
+        deductions
+    }
+
+    public Type fishType;
+
+    public void Initialize(CatchReward reward)
     {
-        fishNameText.text = $"{fishData.fishName}";
-        quantityText.text = $"x{quantity}";
-        moneyText.text = $"${fishData.currentValue * quantity:0}";
+        fishNameText.text = reward.displayName;
+
+        if (reward.amount <= 0)
+        {
+            fishType = Type.deductions;
+        }
+        else
+        {
+            fishType = Type.fish;
+        }
+
+        quantityText.text = $"x{reward.quantity}";
+
+        moneyText.text = reward.amount >= 0f
+            ? $"${reward.amount:0}"
+            : $"-${Mathf.Abs(reward.amount):0}";
 
         if (fishImage != null)
         {
-            fishImage.sprite = fishData.closeup;
-            fishImage.enabled = fishData.closeup != null;
-            fishImage.SetNativeSize();
+            fishImage.enabled = reward.data != null && reward.data.closeup != null;
+
+            if (fishImage.enabled)
+            {
+                fishImage.sprite = reward.data.closeup;
+                fishImage.SetNativeSize();
+            }
         }
     }
 }

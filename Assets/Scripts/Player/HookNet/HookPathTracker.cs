@@ -16,6 +16,7 @@ public class HookPathTracker : MonoBehaviour
     private NetVisualAnimator netVisualAnimator;
     private Transform boatRopePoint;
     private BoatManager boatManager;
+    private LoanManager loanManager;
 
     [Header("Line Renderer")]
     private LineRenderer currentLineRenderer;
@@ -39,10 +40,14 @@ public class HookPathTracker : MonoBehaviour
     [Header("Line Length")]
     [SerializeField][ReadOnly] private float lineUsed;
     [SerializeField][ReadOnly] private float lineRemaining;
+    [SerializeField] private float bonusLineLength;
+
+    [Header("Events")]
+    [SerializeField] private GameEvent onMoneyEarned;
 
     public float LineUsed => lineUsed;
     public float MaxLineLength =>
-        upgradeManager == null ? 20f : upgradeManager.GetUpgradeValue(UpgradeType.RopeLength);
+        upgradeManager == null ? 20f : upgradeManager.GetUpgradeValue(UpgradeType.RopeLength) + bonusLineLength + 1;
     public float LineRemaining => lineRemaining;
     private bool countLineUsage = true;
 
@@ -65,11 +70,17 @@ public class HookPathTracker : MonoBehaviour
         Draw();
     }
 
-    public void Initialize(Transform boatPoint, UpgradeManager manager, BoatManager newBoatManager)
+    public void Initialize(
+        Transform boatPoint,
+        UpgradeManager manager,
+        BoatManager newBoatManager,
+        LoanManager newLoanManager
+    )
     {
         boatRopePoint = boatPoint;
         upgradeManager = manager;
         boatManager = newBoatManager;
+        loanManager = newLoanManager;
 
         lineUsed = 0f;
         lineRemaining = MaxLineLength;
@@ -191,12 +202,33 @@ public class HookPathTracker : MonoBehaviour
         if (brushInstance != null)
             Destroy(brushInstance);
 
+        if (boatManager != null)
+        {
+            float income = boatManager.GetIncomePerDive();
+
+            if (income > 0f)
+            {
+                onMoneyEarned.Raise(
+                    this,
+                    new MoneyChangeData(income, "Boat Income", MoneyChangeType.Earned)
+                );
+            }
+        }
+
         hookMovement.onControlSwitch.Raise(this, "Boat");
 
         Destroy(gameObject);
 
     }
 
+    public void AddBonusLine(float amount)
+    {
+        if (amount <= 0f) return;
+
+        bonusLineLength += amount;
+        lineRemaining += amount;
+    }
+ 
     private bool CheckForIntersection(Vector2 newA, Vector2 newB, out Vector2 intersection, out int intersectedIndex)
     {
         intersection = Vector2.zero;
@@ -371,6 +403,17 @@ public class HookPathTracker : MonoBehaviour
     private void ShowCatchResults(NetArea netArea)
     {
         CatchResult result = netArea.CatchFish();
+
+        if (boatManager != null)
+        {
+            result.AddBoatIncome(boatManager.GetIncomePerDive());
+
+            if (loanManager != null)
+            {
+                float loanCut = loanManager.CalculateDiveCut(result.PositiveTotal);
+                result.AddLoanPayment(loanCut);
+            }
+        }
 
         UIManager.Instance.CatchResultsUI.Show(result, () =>
         {

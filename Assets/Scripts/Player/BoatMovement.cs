@@ -5,15 +5,17 @@ public class BoatMovement : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private GameObject hookPrefab;
-    [SerializeField] private Transform hookSpawn;
     [SerializeField] private BaitInventoryManager baitInventoryManager;
+    [SerializeField] private LoanManager loanManager;
 
     [SerializeField] private BoatManager boatManager;
-    [SerializeField] private SpriteRenderer boatSpriteRenderer;
-
     [SerializeField] private UpgradeManager upgradeManager;
 
-    public Vector2 HookSpawnPosition => hookSpawn.position;
+    private PlayerBoatVisual activePlayerBoat;
+    private Transform hookSpawn;
+
+    public Vector2 HookSpawnPosition =>
+        hookSpawn != null ? hookSpawn.position : transform.position;
 
     private Rigidbody2D rb;
 
@@ -38,14 +40,29 @@ public class BoatMovement : MonoBehaviour
 
     public void RefreshActiveBoatVisual()
     {
-        BoatData activeBoat = boatManager.ActiveBoat;
+        foreach (BoatManager.BoatEntry entry in boatManager.GetAllBoatEntries())
+        {
+            if (entry.playerBoatObject != null)
+                entry.playerBoatObject.gameObject.SetActive(false);
+        }
 
-        if (activeBoat == null)
+        BoatManager.BoatEntry activeEntry = boatManager.ActiveBoatEntry;
+
+        if (activeEntry == null || activeEntry.playerBoatObject == null)
+        {
+            activePlayerBoat = null;
+            hookSpawn = null;
             return;
+        }
 
-        boatSpriteRenderer.gameObject.SetActive(true);
-        boatSpriteRenderer.sprite = activeBoat.boatSprite;
-        hookSpawn.localPosition = activeBoat.hookSpawnLocalPosition;
+        activePlayerBoat = activeEntry.playerBoatObject;
+        activePlayerBoat.gameObject.SetActive(true);
+        activePlayerBoat.SetBoatName(activeEntry.boatData.boatName);
+
+        hookSpawn = activePlayerBoat.HookSpawn;
+
+        if (hookSpawn == null)
+            Debug.LogError($"Active boat '{activeEntry.boatData.boatName}' has no Hook Spawn assigned.");
     }
 
     public void SetMoveInput(Vector2 value)
@@ -59,8 +76,14 @@ public class BoatMovement : MonoBehaviour
         rb.MovePosition(rb.position + movement);
     }
 
-    public GameObject LaunchHook(Vector2 launchDirection, float initialDashDistance)
+    public GameObject LaunchHook(Vector2 launchDirection, float initialDashDistance, float initialDashDuration)
     {
+        if (hookSpawn == null)
+        {
+            Debug.LogError("Cannot launch hook because no active boat hook spawn is assigned.");
+            return null;
+        }
+
         Quaternion spawnRotation = Quaternion.Euler(0f, 0f, 0f);
         GameObject hook = Instantiate(hookPrefab, hookSpawn.position, spawnRotation);
 
@@ -75,7 +98,7 @@ public class BoatMovement : MonoBehaviour
 
         hookMovement.Initialize(upgradeManager, boatManager);
         hookMovement.FaceDirection(launchDirection);
-        hookPathTracker.Initialize(hookSpawn, upgradeManager, boatManager);
+        hookPathTracker.Initialize(hookSpawn, upgradeManager, boatManager, loanManager);
 
         hookPathTracker.SetLineUsageEnabled(false);
         hookMovement.SetMovementEnabled(false);
@@ -85,6 +108,7 @@ public class BoatMovement : MonoBehaviour
             hookInitialDive.BeginInitialDive(
                 launchDirection,
                 initialDashDistance,
+                initialDashDuration,
                 hookMovement,
                 hookPathTracker
             );

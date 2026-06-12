@@ -18,7 +18,8 @@ MonoBehaviour:
   sprite: {fileID: 21300000, guid: ea20943a810a0de48a2859b322000d63, type: 3}
   closeup: {fileID: 21300000, guid: 55d3383524f79ee45afe69168dd0271d, type: 3}
   baseValue: 50
-  currentValue: 0
-  moveSpeed: 7
+  currentValue: 50
+  moveSpeed: 5
   numberCaught: 0
-  description: OMG, I LOVE JAPANESE FOOD
+  description: Bluefin tuna are among the fastest fish in the ocean, regularly reaching
+    swimming speeds of about 43 to 44 mph.

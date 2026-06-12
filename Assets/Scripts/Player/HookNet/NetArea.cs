@@ -132,6 +132,13 @@ public class NetArea : MonoBehaviour
                 fish.owningSpawner.CaughtFish(fish);
             }
 
+            PearlOwner pearlOwner = fish.GetComponent<PearlOwner>();
+
+            if (pearlOwner != null)
+            {
+                pearlOwner.NotifyCaught();
+            }
+
             Destroy(fish.gameObject);
         }
 

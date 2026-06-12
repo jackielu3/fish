@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d0191cb23eb69544aa400787c9fd322, type: 3}
+  m_Name: 7 Dredger
+  m_EditorClassIdentifier: Assembly-CSharp::BoatData
+  boatName: DREDGER
+  description: Dredgers drag along the seafloor to catch clams and oysters.
+  boatSprite: {fileID: 21300000, guid: b8c958ca99e2c174cb9781259104d82c, type: 3}
+  cost: 3000
+  incomePerDive: 500
+  effectDescription: Unlocks the Oysters that open with Bait when active
+  effects:
+  - effectType: 0
+    targetFish: {fileID: 11400000, guid: e7d91f97587f85f4e83a09b7d9141bdb, type: 2}
+    amount: 200
+    amountIncreasePerLevel: 0
+    maxSpawnedIncreasePerLevel: 0
+  maxLevel: 10
+  baseUpgradeCost: 100
+  upgradeCostMultiplier: 1.5
+  incomePerDiveIncreasePerLevel: 5

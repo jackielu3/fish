@@ -20,14 +20,11 @@ public class ControlSwitcher : MonoBehaviour
     private HookBaitDropper hookBaitDropper;
 
     [Header("UI")]
-    [SerializeField] private HookTutorialManager tutorialManager;
     [SerializeField] private BoatModeUI boatModeUI;
     [SerializeField] private LineLengthUI lineLengthUI;
 
     [Header("Initial Launch")]
-    [SerializeField] private float minimumLaunchHoldTime = 2f;
-    [SerializeField] private float launchChargeSegmentTime = 1f;
-    [SerializeField] private float baseInitialLaunchDistance = 8f;
+    [SerializeField] private float launchChargeSegmentTime = 2f;
 
     private bool isChargingLaunch;
     private bool isAimingLaunch;
@@ -92,7 +89,7 @@ public class ControlSwitcher : MonoBehaviour
         {
             launchChargeUI.UpdateCharge(
                 launchHoldTimer,
-                minimumLaunchHoldTime,
+                launchChargeSegmentTime,
                 launchChargeSegmentTime,
                 GetMaxLaunchSegment()
             );
@@ -154,14 +151,17 @@ public class ControlSwitcher : MonoBehaviour
         }
     }
 
-    private void LaunchHook(Vector2 launchDirection, float initialDashDistance)
+    private void LaunchHook(Vector2 launchDirection, float initialDashDistance, float initialDashDuration)
     {
         Debug.Log("LAUNCHING HOOK");
 
         if (launchChargeUI != null)
             launchChargeUI.Hide();
 
-        hookMovement = boatMovement.LaunchHook(launchDirection, initialDashDistance).GetComponent<HookMovement>();
+        GameObject hookObject = boatMovement.LaunchHook(launchDirection, initialDashDistance, initialDashDuration);
+        if (hookObject == null) return;
+
+        hookMovement = hookObject.GetComponent<HookMovement>();
         hookBaitDropper = hookMovement.GetComponent<HookBaitDropper>();
 
         cameraController.FollowTarget(hookMovement.transform);
@@ -233,7 +233,7 @@ public class ControlSwitcher : MonoBehaviour
         if (launchChargeUI != null)
             launchChargeUI.Hide();
 
-        bool canLaunch = launchHoldTimer >= minimumLaunchHoldTime;
+        bool canLaunch = launchHoldTimer >= launchChargeSegmentTime;
 
         if (!canLaunch)
         {
@@ -268,8 +268,24 @@ public class ControlSwitcher : MonoBehaviour
             );
         }
 
-        tutorialManager.OnHookLaunched();
-        LaunchHook(direction, distance);
+        float duration = GetInitialLaunchDuration();
+
+        LaunchHook(direction, distance, duration);
+    }
+
+    private float GetInitialLaunchDuration()
+    {
+        UpgradeData upgrade = upgradeManager.GetUpgrade(UpgradeType.InitialDiveLaunch);
+
+        if (upgrade == null || upgrade.tiers.Count == 0)
+            return 0.35f;
+
+        int maxUnlockedTier = upgrade.currentTierIndex;
+
+        int chargedTier = Mathf.FloorToInt(launchHoldTimer / launchChargeSegmentTime) - 1;
+        chargedTier = Mathf.Clamp(chargedTier, 0, maxUnlockedTier);
+
+        return upgrade.tiers[chargedTier].duration;
     }
 
     private void CancelLaunchCharge()
@@ -299,22 +315,15 @@ public class ControlSwitcher : MonoBehaviour
     {
         UpgradeData upgrade = upgradeManager.GetUpgrade(UpgradeType.InitialDiveLaunch);
 
-        int purchasedTierCount = 0;
-
-        if (upgrade != null)
-            purchasedTierCount = upgrade.currentTierIndex;
-
-        int chargedSegment = Mathf.FloorToInt(launchHoldTimer / launchChargeSegmentTime) - 1;
-
-        if (chargedSegment <= 0)
-            return baseInitialLaunchDistance;
-
         if (upgrade == null || upgrade.tiers.Count == 0)
-            return baseInitialLaunchDistance;
+            return 8f;
 
-        int upgradeTierIndex = Mathf.Clamp(chargedSegment - 1, 0, purchasedTierCount - 1);
+        int maxUnlockedTier = upgrade.currentTierIndex;
 
-        return upgrade.tiers[upgradeTierIndex].value;
+        int chargedTier = Mathf.FloorToInt(launchHoldTimer / launchChargeSegmentTime) - 1;
+        chargedTier = Mathf.Clamp(chargedTier, 0, maxUnlockedTier);
+
+        return upgrade.tiers[chargedTier].value;
     }
 
     private bool PressedNonMovementCancelInput()
@@ -356,9 +365,9 @@ public class ControlSwitcher : MonoBehaviour
     {
         UpgradeData upgrade = upgradeManager.GetUpgrade(UpgradeType.InitialDiveLaunch);
 
-        if (upgrade == null)
+        if (upgrade == null || upgrade.tiers.Count == 0)
             return 0;
 
-        return Mathf.Clamp(upgrade.currentTierIndex, 0, upgrade.tiers.Count);
+        return Mathf.Clamp(upgrade.currentTierIndex, 0, upgrade.tiers.Count - 1);
     }
 }

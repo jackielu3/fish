@@ -9,11 +9,11 @@ public class BoatManager : MonoBehaviour
     {
         public BoatData boatData;
         public GameObject backgroundBoatObject;
+        public PlayerBoatVisual playerBoatObject;
 
         [ReadOnly] public bool isOwned;
         [ReadOnly] public int level = 1;
     }
-
     [Header("References")]
     [SerializeField] private MoneyManager moneyManager;
     [SerializeField] private List<FishData> allFish = new();
@@ -39,12 +39,10 @@ public class BoatManager : MonoBehaviour
         {
             if (boat.backgroundBoatObject != null)
                 boat.backgroundBoatObject.SetActive(boat.isOwned);
-        }
-    }
 
-    private void Start()
-    {
-        StartCoroutine(PassiveIncomeRoutine());
+            if (boat.playerBoatObject != null)
+                boat.playerBoatObject.gameObject.SetActive(false);
+        }
     }
 
     public bool IsActiveBoat(BoatData boatData)
@@ -52,17 +50,9 @@ public class BoatManager : MonoBehaviour
         return activeBoat == boatData;
     }
 
-    private IEnumerator PassiveIncomeRoutine()
+    public List<BoatEntry> GetAllBoatEntries()
     {
-        while (true)
-        {
-            yield return new WaitForSeconds(1f);
-
-            float passiveIncome = GetPassiveIncome();
-
-            if (passiveIncome > 0f)
-                moneyManager.AddMoney(passiveIncome);
-        }
+        return boats;
     }
 
     public bool TryBuyBoat(BoatData boatData)
@@ -71,44 +61,53 @@ public class BoatManager : MonoBehaviour
 
         if (entry == null) return false;
         if (entry.isOwned) return false;
-        if (!moneyManager.TrySpendMoney(boatData.cost)) return false;
-
+        if (!moneyManager.TrySpendMoneyWithoutAffectingStats(boatData.cost)) return false;
         entry.isOwned = true;
 
         if (entry.backgroundBoatObject != null)
             entry.backgroundBoatObject.SetActive(true);
 
         if (activeBoat == null)
+        {
             activeBoat = boatData;
+            onActiveBoatChanged.Raise(this, activeBoat);
+        }
 
         RecalculateFishValues();
 
         return true;
     }
 
-    private void RecalculateFishValues()
+private void RecalculateFishValues()
+{
+    foreach (FishData fish in allFish)
     {
-        foreach (FishData fish in allFish)
+        float bonusPercent = 0f;
+        float multiplier = 1f;
+
+        if (activeBoat != null)
         {
-            float bonusPercent = 0f;
+            int activeLevel = GetBoatLevel(activeBoat);
 
-            if (activeBoat != null)
+            foreach (BoatEffect effect in activeBoat.effects)
             {
-                foreach (BoatEffect effect in activeBoat.effects)
+                if (effect.targetFish != fish)
+                    continue;
+
+                if (effect.effectType == BoatEffectType.FishValueBonus)
                 {
-                    if (effect.effectType != BoatEffectType.FishValueBonus)
-                        continue;
-
-                    if (effect.targetFish != fish)
-                        continue;
-
-                    bonusPercent += effect.amount;
+                    bonusPercent += GetScaledEffectAmount(effect, activeLevel);
+                }
+                else if (effect.effectType == BoatEffectType.FishValueMultiplier)
+                {
+                    multiplier *= Mathf.Pow(effect.amount, activeLevel - 1);
                 }
             }
-
-            fish.currentValue = fish.baseValue * (1f + bonusPercent);
         }
+
+        fish.currentValue = fish.baseValue * (1f + bonusPercent) * multiplier;
     }
+}
 
     public bool IsOwned(BoatData boatData)
     {
@@ -116,7 +115,7 @@ public class BoatManager : MonoBehaviour
         return entry != null && entry.isOwned;
     }
 
-    public float GetPassiveIncome()
+    public float GetIncomePerDive()
     {
         float total = 0f;
 
@@ -125,10 +124,15 @@ public class BoatManager : MonoBehaviour
             if (!entry.isOwned) continue;
             if (entry.boatData == null) continue;
 
-            total += entry.boatData.passiveIncomePerSecond;
+            total += GetBoatIncomePerDive(entry.boatData);
         }
 
         return total;
+    }
+
+    private float GetScaledEffectAmount(BoatEffect effect, int boatLevel)
+    {
+        return effect.amount + effect.amountIncreasePerLevel * (boatLevel - 1);
     }
 
     public float GetActiveEffectAmount(BoatEffectType effectType)
@@ -136,11 +140,54 @@ public class BoatManager : MonoBehaviour
         if (activeBoat == null) return 0f;
 
         float total = 0f;
+        int activeLevel = GetBoatLevel(activeBoat);
 
         foreach (BoatEffect effect in activeBoat.effects)
         {
             if (effect.effectType == effectType)
-                total += effect.amount;
+                total += GetScaledEffectAmount(effect, activeLevel);
+        }
+
+        return total;
+    }
+
+    public float GetActiveEffectAmount(BoatEffectType effectType, FishData targetFish)
+    {
+        if (activeBoat == null) return 0f;
+
+        float total = 0f;
+        int activeLevel = GetBoatLevel(activeBoat);
+
+        foreach (BoatEffect effect in activeBoat.effects)
+        {
+            if (effect.effectType != effectType)
+                continue;
+
+            if (effect.targetFish != targetFish)
+                continue;
+
+            total += GetScaledEffectAmount(effect, activeLevel);
+        }
+
+        return total;
+    }
+
+    public int GetActiveSpecialFishSpawnBonus(FishData targetFish)
+    {
+        if (activeBoat == null) return 0;
+
+        int total = 0;
+        int activeLevel = GetBoatLevel(activeBoat);
+
+        foreach (BoatEffect effect in activeBoat.effects)
+        {
+            if (effect.effectType != BoatEffectType.UnlockSpecialFish)
+                continue;
+
+            if (effect.targetFish != targetFish)
+                continue;
+
+            total += effect.maxSpawnedIncreasePerLevel * (activeLevel - 1);
         }
 
         return total;
@@ -149,6 +196,19 @@ public class BoatManager : MonoBehaviour
     public bool HasActiveEffect(BoatEffectType effectType)
     {
         return GetActiveEffectAmount(effectType) > 0f;
+    }
+
+    public bool HasActiveEffect(BoatEffectType effectType, FishData targetFish)
+    {
+        if (activeBoat == null) return false;
+
+        foreach (BoatEffect effect in activeBoat.effects)
+        {
+            if (effect.effectType == effectType && effect.targetFish == targetFish)
+                return true;
+        }
+
+        return false;
     }
 
     public BoatEntry GetBoatEntry(BoatData boatData)
@@ -170,4 +230,76 @@ public class BoatManager : MonoBehaviour
 
         return true;
     }
+
+    public int GetBoatLevel(BoatData boatData)
+    {
+        BoatEntry entry = GetBoatEntry(boatData);
+        return entry == null ? 0 : entry.level;
+    }
+
+    public bool IsBoatMaxLevel(BoatData boatData)
+    {
+        BoatEntry entry = GetBoatEntry(boatData);
+        return entry == null || entry.level >= boatData.maxLevel;
+    }
+
+    public float GetBoatUpgradeCost(BoatData boatData)
+    {
+        BoatEntry entry = GetBoatEntry(boatData);
+
+        if (entry == null) return 0f;
+        if (entry.level >= boatData.maxLevel) return 0f;
+
+        return boatData.baseUpgradeCost *
+               Mathf.Pow(boatData.upgradeCostMultiplier, entry.level - 1);
+    }
+
+    public bool TryUpgradeBoat(BoatData boatData)
+    {
+        BoatEntry entry = GetBoatEntry(boatData);
+
+        if (entry == null) return false;
+        if (!entry.isOwned) return false;
+        if (entry.level >= boatData.maxLevel) return false;
+
+        float cost = GetBoatUpgradeCost(boatData);
+
+        if (!moneyManager.TrySpendMoneyWithoutAffectingStats(cost))
+            return false;
+
+        entry.level++;
+
+        RecalculateFishValues();
+
+        if (activeBoat == boatData)
+            onActiveBoatChanged.Raise(this, activeBoat);
+
+        return true;
+    }
+
+    public float GetBoatIncomePerDive(BoatData boatData)
+    {
+        BoatEntry entry = GetBoatEntry(boatData);
+
+        if (entry == null || !entry.isOwned || boatData == null)
+            return 0f;
+
+        return boatData.incomePerDive +
+               boatData.incomePerDiveIncreasePerLevel * (entry.level - 1);
+    }
+
+    public List<BoatEntry> GetOwnedBoatEntries()
+    {
+        List<BoatEntry> owned = new();
+
+        foreach (BoatEntry entry in boats)
+        {
+            if (entry.isOwned)
+                owned.Add(entry);
+        }
+
+        return owned;
+    }
+
+    public BoatEntry ActiveBoatEntry => GetBoatEntry(activeBoat);
 }

@@ -37,6 +37,8 @@ public class HookMovement : MonoBehaviour
     private Rigidbody2D rb;
     private readonly RaycastHit2D[] hitResults = new RaycastHit2D[4];
 
+    public float CurrentMoveSpeed => moveSpeed;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();

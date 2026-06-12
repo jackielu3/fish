@@ -11,6 +11,7 @@ public class UpgradeShopUI : MonoBehaviour
     [Header("Details UI")]
     [SerializeField] private GameObject detailsRoot;
     [SerializeField] private TMP_Text upgradeNameText;
+    [SerializeField] private Image upgradeImage;
     [SerializeField] private TMP_Text descriptionText;
     [SerializeField] private TMP_Text currentTierText;
     [SerializeField] private TMP_Text nextTierText;
@@ -54,6 +55,11 @@ public class UpgradeShopUI : MonoBehaviour
         SelectUpgrade(UpgradeType.InitialDiveLaunch);
     }
 
+    public void SelectNetFragmentsUpgrade()
+    {
+        SelectUpgrade(UpgradeType.NetFragments);
+    }
+
     private void SelectUpgrade(UpgradeType type)
     {
         selectedUpgradeType = type;
@@ -95,6 +101,8 @@ public class UpgradeShopUI : MonoBehaviour
             return;
         }
 
+        upgradeImage.sprite = upgrade.upgradeImage;
+        upgradeImage.SetNativeSize();
         descriptionText.text = nextTier.description;
         nextTierText.text = $"Next: {nextTier.tierName} ({nextTier.value})";
         costText.text = $"Cost: ${nextTier.cost:F2}";

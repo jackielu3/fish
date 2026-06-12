@@ -17,6 +17,9 @@ public class BaitShopUI : MonoBehaviour
     [SerializeField] private Button buyButton;
     [SerializeField] private TextMeshProUGUI buyButtonText;
 
+    [SerializeField] private Image descriptionImage;
+    [SerializeField] private Sprite image;
+
     [SerializeField] private TMP_Text[] unused;
 
     [Header("Button Visuals")]
@@ -64,6 +67,8 @@ public class BaitShopUI : MonoBehaviour
         descriptionText.text = baitDescription;
         countText.text = $"Owned: {baitInventoryManager.BaitCount}/{baitInventoryManager.MaxBaitCount}";
         costText.text = $"Cost: ${baitInventoryManager.BaitCost:F2}";
+        descriptionImage.sprite = image;
+        descriptionImage.SetNativeSize();
 
         if (baitInventoryManager.IsFull)
         {

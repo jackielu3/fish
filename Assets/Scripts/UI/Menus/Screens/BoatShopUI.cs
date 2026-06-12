@@ -62,7 +62,7 @@ public class BoatShopUI : MonoBehaviour
 
         boatNameText.text = selectedBoat.boatName;
         descriptionText.text = selectedBoat.description;
-        passiveIncomeText.text = $"Passive Income: ${selectedBoat.passiveIncomePerSecond:F2}/sec";
+        passiveIncomeText.text = $"Income Per Dive: ${selectedBoat.incomePerDive:F2}";
         costText.text = $"Cost: ${selectedBoat.cost:F2}";
 
         if (boatImage != null)
@@ -70,12 +70,7 @@ public class BoatShopUI : MonoBehaviour
             boatImage.sprite = selectedBoat.boatSprite;
         }
 
-        effectsText.text = "";
-
-        foreach (BoatEffect effect in selectedBoat.effects)
-        {
-            effectsText.text += $"• {effect.description}\n";
-        }
+        effectsText.text = selectedBoat.effectDescription;
 
         bool isOwned = boatManager.IsOwned(selectedBoat);
 
@@ -147,6 +142,7 @@ public class BoatShopUI : MonoBehaviour
 
         if (bought)
         {
+            // TutorialManager.Instance.TryPlay("BoughtFirstBoat");
             boatManager.TrySwitchBoat(selectedBoat);
             boatMovement.RefreshActiveBoatVisual();
             RefreshDetails();

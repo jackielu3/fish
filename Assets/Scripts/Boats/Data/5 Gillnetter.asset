@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d0191cb23eb69544aa400787c9fd322, type: 3}
+  m_Name: 5 Gillnetter
+  m_EditorClassIdentifier: Assembly-CSharp::BoatData
+  boatName: GILLNETTER
+  description: 'Casts nets in a straight line and used to target fish of medium sizes. '
+  boatSprite: {fileID: 21300000, guid: f2d08534e2c805a49a01a74df1cdc15c, type: 3}
+  cost: 1500
+  incomePerDive: 100
+  effectDescription: Raises value of Mackerel and Red Snapper
+  effects:
+  - effectType: 0
+    targetFish: {fileID: 11400000, guid: da6b52f17eb275043bde7302e07f29e2, type: 2}
+    amount: 0.1
+    amountIncreasePerLevel: 0
+    maxSpawnedIncreasePerLevel: 0
+  - effectType: 0
+    targetFish: {fileID: 11400000, guid: 35da558a8242d7343b716cd43fbf0dbe, type: 2}
+    amount: 0.1
+    amountIncreasePerLevel: 0
+    maxSpawnedIncreasePerLevel: 0
+  maxLevel: 10
+  baseUpgradeCost: 100
+  upgradeCostMultiplier: 1.5
+  incomePerDiveIncreasePerLevel: 5

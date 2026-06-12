@@ -13,13 +13,24 @@ MonoBehaviour:
   m_Name: 2 Drifter
   m_EditorClassIdentifier: Assembly-CSharp::BoatData
   boatName: DRIFTER
-  description: Boat specialized for tiny fish
+  description: An older style of boat that used drifting nets to catch large schools
+    of fish.
   boatSprite: {fileID: 21300000, guid: ed4faf63ac299e648a2d64a921f987a2, type: 3}
   cost: 500
-  passiveIncomePerSecond: 1
-  hookSpawnLocalPosition: {x: 0, y: 0}
+  incomePerDive: 10
+  effectDescription: Raises value of Sardines and Whitefish
   effects:
   - effectType: 0
     targetFish: {fileID: 11400000, guid: 1b315a68dfae3bf46ba67e92c4e61f4e, type: 2}
-    amount: 0.1
-    description: 'Anchovy Cost Up 10% '
+    amount: 0.15
+    amountIncreasePerLevel: 0.15
+    maxSpawnedIncreasePerLevel: 0
+  - effectType: 0
+    targetFish: {fileID: 11400000, guid: 30f0990c2e68c6d468ee146268736689, type: 2}
+    amount: 0.15
+    amountIncreasePerLevel: 0.15
+    maxSpawnedIncreasePerLevel: 0
+  maxLevel: 10
+  baseUpgradeCost: 100
+  upgradeCostMultiplier: 1.5
+  incomePerDiveIncreasePerLevel: 5

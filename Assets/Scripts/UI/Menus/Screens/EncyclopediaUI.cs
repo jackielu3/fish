@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,6 +11,9 @@ public class EncyclopediaUI : MonoBehaviour
         public FishData fishData;
         public GameObject encyclopediaObject;
         public Button button;
+
+        public Image fishImage;
+        public TMP_Text fishNameText;
     }
 
     [Header("Fish Entries")]
@@ -38,8 +42,20 @@ public class EncyclopediaUI : MonoBehaviour
             if (entry.fishData == null || entry.encyclopediaObject == null)
                 continue;
 
-            bool hasCaughtFish = entry.fishData.numberCaught > 0;
-            entry.encyclopediaObject.SetActive(hasCaughtFish);
+            bool discovered = entry.fishData.numberCaught > 0;
+
+            if (discovered)
+            {
+                entry.fishImage.color = Color.white;
+                entry.fishNameText.text = entry.fishData.fishName;
+            }
+            else
+            {
+                entry.fishImage.color = Color.black;
+                entry.fishNameText.text = "???";
+            }
+
+            entry.encyclopediaObject.SetActive(true);
 
             if (entry.button != null)
             {
